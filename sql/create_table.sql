@@ -3,6 +3,7 @@
  */
 
 -- 删除已存在的表（如果存在）
+create database shop;
 use shop;
 DROP TABLE IF EXISTS orderdetail;
 DROP TABLE IF EXISTS orderbasetable;
@@ -32,6 +33,7 @@ CREATE TABLE goodstype (
     typename VARCHAR(50) NOT NULL
 );
 
+drop table if exists goodstable;
 -- 创建商品表
 CREATE TABLE goodstable (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -42,6 +44,7 @@ CREATE TABLE goodstable (
     gpicture VARCHAR(100),
     isRecommend INT DEFAULT 0,
     isAdvertisement INT DEFAULT 0,
+    status INT DEFAULT 1 COMMENT '商品状态：1-上架，0-下架',
     goodstype_id INT,
     FOREIGN KEY (goodstype_id) REFERENCES goodstype(id)
 );
@@ -93,8 +96,12 @@ INSERT INTO goodstype VALUES (1, '服装'), (2, '电子产品'), (3, '家居用�
 
 INSERT INTO busertable (bemail, bpwd) VALUES ('user@example.com', '123456');
 
-INSERT INTO goodstable (gname, goprice, grprice, gstore, gpicture, isRecommend, isAdvertisement, goodstype_id) 
+ALTER TABLE goodstable
+    ADD COLUMN status INT DEFAULT 1 COMMENT '商品状态：1-上架，0-下架';
+
+
+INSERT INTO goodstable (gname, goprice, grprice, gstore, gpicture, isRecommend, isAdvertisement, status, goodstype_id) 
 VALUES 
-('T恤', 50.0, 39.9, 100, 'tshirt.jpg', 1, 0, 1),
-('手机', 2000.0, 1800.0, 50, 'phone.jpg', 1, 1, 2),
-('沙发', 3000.0, 2500.0, 20, 'sofa.jpg', 0, 1, 3);
+('T恤', 50.0, 39.9, 100, '201910274135150096.jpg', 1, 0, 1, 1),
+('手机', 2000.0, 1800.0, 50, '201910280135503341.jpg', 1, 1, 1, 2),
+('沙发', 3000.0, 2500.0, 20, '201910274135059473.jpg', 0, 1, 1, 3);

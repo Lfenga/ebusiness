@@ -15,6 +15,7 @@ public class Goods {
 	private int buyNumber;//加入购物车使用
 	private int isAdvertisement;
 	private int isRecommend;
+	private int status; //商品状态：1-上架，0-下架
 	public int getId() {
 		return id;
 	}
@@ -86,5 +87,11 @@ public class Goods {
 	}
 	public void setFileName(MultipartFile fileName) {
 		this.fileName = fileName;
+	}
+	public int getStatus() {
+		return status;
+	}
+	public void setStatus(int status) {
+		this.status = status;
 	}
 }

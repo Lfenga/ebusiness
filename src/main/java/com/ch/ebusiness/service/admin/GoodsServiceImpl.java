@@ -43,7 +43,7 @@ public class GoodsServiceImpl implements GoodsService{
 			//String path = request.getServletContext().getRealPath("/images/");
 			//获得上传文件原名
 			//上传文件路径（开发环境）
-			String path = "C:\\workspace-spring-tool-suite-4-4.1.1.RELEASE\\eBusiness\\src\\main\\resources\\static\\images";
+			String path = "F:\\sendWork\\javaEE\\work8\\eBusiness\\eBusiness\\src\\main\\resources\\static\\images";
 			//获得上传文件原名
 			String fileName = myfile.getOriginalFilename();
 			//对文件重命名
@@ -74,6 +74,7 @@ public class GoodsServiceImpl implements GoodsService{
 	}
 	@Override
 	public String toAddGoods(Goods goods, Model model) {
+		goods.setStatus(1); // 默认上架
 		model.addAttribute("goodsType", goodsRepository.selectAllGoodsType());
 		return "admin/addGoods";
 	}

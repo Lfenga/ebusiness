@@ -36,6 +36,10 @@
 								<td th:text="${goods.gstore}"></td>
 							</tr>
 							<tr>
+								<th>商品状态</th>
+								<td th:text="${goods.status == 1 ? '上架' : '下架'}"></td>
+							</tr>
+							<tr>
 								<th>商品图片</th>
 								<td>
 									<img th:src="'images/' + ${goods.gpicture}"

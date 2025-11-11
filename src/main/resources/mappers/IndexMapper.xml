@@ -12,6 +12,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where 
 			gt.goodstype_id = gy.id 
 			and gt.isAdvertisement = 1
+			and gt.status = 1
 		order by  gt.id desc limit 5 
 	</select>
 	<!-- 查询商品详情 -->
@@ -23,6 +24,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where 
 			gt.goodstype_id = gy.id 
 			and gt.id = #{id}
+			and gt.status = 1
 	</select>
 	<!-- 查询商品类型 -->
 	<select id="selectGoodsType" resultType="GoodsType">
@@ -37,6 +39,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where 
 			gt.goodstype_id = gy.id 
 			and gt.isRecommend = 1
+			and gt.status = 1
 			<if test="tid != 0">
 				and gy.id = #{tid} 
 			</if>
@@ -50,6 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			goodstable gt,goodstype gy 
 		where 
 			gt.goodstype_id = gy.id 
+			and gt.status = 1
 			<if test="tid != 0">
 				and gy.id = #{tid} 
 			</if>
@@ -59,5 +63,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="search" resultType="Goods" parameterType="String">
 		select gt.*, gy.typename from GOODSTABLE gt,GOODSTYPE gy where gt.goodstype_id = gy.id 
 		and gt.gname like concat('%',#{mykey},'%')
+		and gt.status = 1
 	</select>
 </mapper>

@@ -81,6 +81,17 @@
 				</div>
 			</div>
 			<div class="form-group has-success">
+				<label class="col-sm-2 col-md-2 control-label">商品状态</label>
+				<div class="col-sm-4 col-md-4 radio">
+					<label> 
+						<input type="radio" th:field="*{status}" value="1">上架
+					</label>
+					<label> 
+						<input type="radio" th:field="*{status}" value="0">下架
+					</label>
+				</div>
+			</div>
+			<div class="form-group has-success">
 				<label class="col-sm-2 col-md-2 control-label">商品类型</label>
 				<div class="col-sm-4 col-md-4">
 					<select class="form-control" th:field="*{goodstype_id}">
