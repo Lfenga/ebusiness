@@ -40,9 +40,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectGoodsShop"  parameterType="Integer" resultType="map">
 		select shoppingnum gshoppingnum, goodstable_id gid from carttable where busertable_id=#{uid}
 	</select>
-	<!-- 更新商品库存 -->
+	<!-- 更新商品库存 - 使用悲观锁确保并发安全 -->
 	<update id="updateStore" parameterType="map">
-		update GOODSTABLE set GSTORE=GSTORE-#{gshoppingnum} where id=#{gid} 
+		update goodstable set stock = stock - #{gshoppingnum} 
+		where id = #{gid} and stock >= #{gshoppingnum}
 	</update>
 	<!-- 支付订单 -->
 	<update id="pay" parameterType="Integer">

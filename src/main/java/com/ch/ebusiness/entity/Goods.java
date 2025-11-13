@@ -7,7 +7,7 @@ public class Goods {
 	private String gname;
 	private double goprice;
 	private double grprice;
-	private int gstore;
+	private int stock;
 	private String gpicture;
 	private MultipartFile fileName;
 	private int goodstype_id;
@@ -47,12 +47,12 @@ public class Goods {
 		this.grprice = grprice;
 	}
 
-	public int getGstore() {
-		return gstore;
+	public int getStock() {
+		return stock;
 	}
 
-	public void setGstore(int gstore) {
-		this.gstore = gstore;
+	public void setStock(int stock) {
+		this.stock = stock;
 	}
 
 	public String getGpicture() {

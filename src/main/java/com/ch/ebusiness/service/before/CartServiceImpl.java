@@ -74,17 +74,44 @@ public class CartServiceImpl implements CartService {
 	@Transactional
 	public String submitOrder(Order order, Model model, HttpSession session) {
 		order.setBusertable_id(MyUtil.getUser(session).getId());
-		// 生成订单
-		cartRepository.addOrder(order);
-		// 生成订单详情
-		cartRepository.addOrderDetail(order.getId(), MyUtil.getUser(session).getId());
-		// 减少商品库存
+
+		// 1. 先检查库存是否充足
 		List<Map<String, Object>> listGoods = cartRepository.selectGoodsShop(MyUtil.getUser(session).getId());
 		for (Map<String, Object> map : listGoods) {
-			cartRepository.updateStore(map);
+			Integer gid = (Integer) map.get("gid");
+			Integer gshoppingnum = (Integer) map.get("gshoppingnum");
+
+			// 查询商品当前库存
+			Goods goods = indexRepository.selectAGoods(gid);
+			if (goods == null) {
+				throw new RuntimeException("商品不存在，商品ID：" + gid);
+			}
+			if (goods.getStock() < gshoppingnum) {
+				throw new RuntimeException(
+						"商品【" + goods.getGname() + "】库存不足！当前库存：" + goods.getStock() + "，需要：" + gshoppingnum);
+			}
 		}
-		// 清空购物车
+
+		// 2. 生成订单
+		cartRepository.addOrder(order);
+
+		// 3. 生成订单详情
+		cartRepository.addOrderDetail(order.getId(), MyUtil.getUser(session).getId());
+
+		// 4. 扣减商品库存（使用悲观锁机制）
+		for (Map<String, Object> map : listGoods) {
+			int updatedRows = cartRepository.updateStore(map);
+			if (updatedRows == 0) {
+				// 如果更新失败（库存不足），回滚事务
+				Integer gid = (Integer) map.get("gid");
+				Goods goods = indexRepository.selectAGoods(gid);
+				throw new RuntimeException("商品【" + goods.getGname() + "】库存不足，下单失败！");
+			}
+		}
+
+		// 5. 清空购物车
 		cartRepository.clear(MyUtil.getUser(session).getId());
+
 		model.addAttribute("order", order);
 		return "user/pay";
 	}

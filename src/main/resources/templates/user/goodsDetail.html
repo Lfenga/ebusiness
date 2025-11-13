@@ -13,7 +13,7 @@
 			$("#buyNumber").focus();
 			return;
 		}
-		if(parseInt($("#buyNumber").val()) > parseInt($("#gstore").text())){
+		if(parseInt($("#buyNumber").val()) > parseInt($("#stock").text())){
 			alert("购买量超出库存!");
 			$("#buyNumber").focus();
 			return;
@@ -53,7 +53,7 @@
 					商品类型：<span th:text="${goods.typename}"></span>
 				</p>
 				<p>
-					库存：<span id="gstore"  th:text="${goods.gstore}"></span>
+					库存：<span id="stock"  th:text="${goods.stock}"></span>
 				</p>
 				<p>
 					<input type="text" size="12" class="form-control" placeholder="请输入购买量" id="buyNumber" name="buyNumber"/>

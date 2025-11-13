@@ -104,3 +104,12 @@ ALTER TABLE goodstable
 
 ALTER TABLE goodstable
     DROP COLUMN isAdvertisement;
+
+
+-- 增加 stock 字段表示库存，并添加非负约束
+
+ALTER TABLE goodstable
+    CHANGE COLUMN gstore stock INT NOT NULL;
+
+ALTER TABLE goodstable
+    ADD CONSTRAINT chk_stock_non_negative CHECK (stock >= 0);

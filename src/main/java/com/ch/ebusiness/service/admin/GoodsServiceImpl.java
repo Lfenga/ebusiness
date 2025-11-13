@@ -38,6 +38,11 @@ public class GoodsServiceImpl implements GoodsService {
 	@Override
 	public String addGoods(Goods goods, HttpServletRequest request, String act)
 			throws IllegalStateException, IOException {
+		// 验证库存不能为负数
+		if (goods.getStock() < 0) {
+			throw new IllegalArgumentException("商品库存不能小于0！");
+		}
+
 		MultipartFile myfile = goods.getFileName();
 		// 如果选择了上传文件，将文件上传到指定的目录images
 		if (!myfile.isEmpty()) {
