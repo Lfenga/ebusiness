@@ -43,48 +43,20 @@
 				</li>
 				<li><a th:href="@{admin/toLogin}">后台</a></li>
 			</ul>
-			<ul class="nav navbar-nav navbar-right" style="padding-right: 30px;">
-				<li><a href="cart/userInfo">个人信息</a></li>
-				<li><a href="cart/selectCart">我的购物车</a></li>
-				<li><a href="cart/myFocus">我的收藏</a></li>
-				<li><a href="cart/myOder">我的订单</a></li>
-				<li class="dropdown"><a href="##" data-toggle="dropdown"
-					class="dropdown-toggle">关于我们<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a href="##">联系我们</a></li>
-						<li><a href="##">投诉建议</a></li>
-					</ul>
-				</li>
-			</ul>
+		<ul class="nav navbar-nav navbar-right" style="padding-right: 30px;">
+			<li><a href="cart/userInfo">个人信息</a></li>
+			<li><a href="cart/selectCart">我的购物车</a></li>
+			<li><a href="cart/myOder">我的订单</a></li>
+			<li class="dropdown"><a href="##" data-toggle="dropdown"
+				class="dropdown-toggle">关于我们<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><a href="##">联系我们</a></li>
+					<li><a href="##">投诉建议</a></li>
+				</ul>
+			</li>
+		</ul>
 		</div>
 		<!-- ************************************************** -->
-		<div id="carousel-example-generic" class="carousel slide"
-			data-ride="carousel" style="margin-top: 20px;">
-			<!-- Indicators 小圆圈-->
-			<ol class="carousel-indicators">
-				<li data-target="#carousel-example-generic" 
-				th:each="advertise,adstat:${advertisementGoods}" 
-				th:data-slide-to="${adstat.index}"
-				th:class="(${adstat.index}==0)? 'active' : ''"></li>
-			</ol>
-			<!-- 滚动广告图片 -->
-			<div class="carousel-inner" role="listbox">
-				<div th:each="advertise,adstat:${advertisementGoods}" th:class="(${adstat.index}==0)? 'item active' : 'item'">
-					<img th:src="'images/' + ${advertise.gpicture}" th:alt="${adstat.index + 1}">
-					<div class="carousel-caption"><span th:text="${advertise.gname}"></span></div>
-				</div>
-			</div>
-			<!-- Controls -->
-			<a class="left carousel-control" href="#carousel-example-generic"
-				role="button" data-slide="prev"> <span
-				class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
-				<span class="sr-only">Previous</span>
-			</a> <a class="right carousel-control" href="#carousel-example-generic"
-				role="button" data-slide="next"> <span
-				class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
-				<span class="sr-only">Next</span>
-			</a>
-		</div>
 		<!-- *************************************** -->
 		<div class="navbar navbar-default " role="navigation">
 			<ul class="nav navbar-nav" style="padding-left: 50px;">

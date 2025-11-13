@@ -3,13 +3,6 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ch.ebusiness.repository.before.CartRepository">
-	<!-- 处理加入收藏  -->
-	<select id="isFocus" resultType="map">
-		select * from focustable where goodstable_id = #{gid} and busertable_id = #{uid}
-	</select>
-	<insert id="focus">
-		insert into focustable (id, goodstable_id, busertable_id, focustime)  values(null, #{gid}, #{uid}, now())
-	</insert>
 	<!-- 是否已添加购物车 -->
 	<select id="isPutCart" resultType="map">
 		select * from carttable where goodstable_id=#{gid}  and busertable_id=#{uid}
@@ -55,11 +48,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id="pay" parameterType="Integer">
 		update orderbasetable set status=1 where id=#{ordersn}
 	</update>
-	<!-- 我的收藏 -->
-	<select id="myFocus" resultType="map"  parameterType="Integer">
-		select gt.id, gt.gname, gt.goprice, gt.grprice, gt.gpicture from FOCUSTABLE ft, GOODSTABLE gt 
-		 where ft.goodstable_id=gt.id and  ft.busertable_id = #{uid} and gt.status = 1
-	</select>
 	<!-- 我的订单 -->
 	<select id="myOrder"  resultType="map" parameterType="Integer">
 		select id, amount, busertable_id, status, orderdate  from ORDERBASETABLE where busertable_id = #{uid} 

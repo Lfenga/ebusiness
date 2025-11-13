@@ -24,8 +24,7 @@ public class GoodsController extends AdminBaseController{
 	}
 	@RequestMapping("/toAddGoods")
 	public String toAddGoods(@ModelAttribute("goods") Goods goods, Model model) {
-		goods.setIsAdvertisement(0);
-		goods.setIsRecommend(1);
+
 		return goodsService.toAddGoods(goods, model);
 	}
 	@RequestMapping("/addGoods")

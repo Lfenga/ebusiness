@@ -15,8 +15,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	<!-- 添加商品 -->
 	<insert id="addGoods" parameterType="Goods">
-		insert into goodstable (id,gname,goprice,grprice,gstore,gpicture,isRecommend,isAdvertisement,status,goodstype_id) 
-		values (null, #{gname}, #{goprice}, #{grprice}, #{gstore}, #{gpicture},#{isRecommend}, #{isAdvertisement}, #{status}, #{goodstype_id})
+		insert into goodstable (id,gname,goprice,grprice,gstore,gpicture,status,goodstype_id) 
+		values (null, #{gname}, #{goprice}, #{grprice}, #{gstore}, #{gpicture}, #{status}, #{goodstype_id})
 	</insert>
 	<!-- 查询商品类型 -->
 	<select id="selectAllGoodsType"  resultType="GoodsType">
@@ -44,15 +44,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         grprice = #{grprice},
         gstore = #{gstore},
         gpicture = #{gpicture},
-        isRecommend = #{isRecommend},
-        isAdvertisement = #{isAdvertisement},
         status = #{status},
         goodstype_id = #{goodstype_id}
     where id = #{id}
   </update>
-  <select id="selectFocusGoods" parameterType="integer" resultType="map">
-  	select * from focustable where goodstable_id = #{id}
-  </select>
   <select id="selectCartGoods" parameterType="integer" resultType="map">
   	select * from carttable where goodstable_id = #{id}
   </select>

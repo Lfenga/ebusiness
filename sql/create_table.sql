@@ -8,7 +8,6 @@ use shop;
 DROP TABLE IF EXISTS orderdetail;
 DROP TABLE IF EXISTS orderbasetable;
 DROP TABLE IF EXISTS carttable;
-DROP TABLE IF EXISTS focustable;
 DROP TABLE IF EXISTS goodstable;
 DROP TABLE IF EXISTS goodstype;
 DROP TABLE IF EXISTS busertable;
@@ -42,8 +41,7 @@ CREATE TABLE goodstable (
     grprice DOUBLE NOT NULL,
     gstore INT NOT NULL,
     gpicture VARCHAR(100),
-    isRecommend INT DEFAULT 0,
-    isAdvertisement INT DEFAULT 0,
+-- 商品状态：1-上架，0-下架
     status INT DEFAULT 1 COMMENT '商品状态：1-上架，0-下架',
     goodstype_id INT,
     FOREIGN KEY (goodstype_id) REFERENCES goodstype(id)
@@ -79,16 +77,6 @@ CREATE TABLE carttable (
     FOREIGN KEY (goodstable_id) REFERENCES goodstable(id)
 );
 
--- 创建收藏表
-CREATE TABLE focustable (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    goodstable_id INT,
-    busertable_id INT,
-    focustime DATETIME,
-    FOREIGN KEY (goodstable_id) REFERENCES goodstable(id),
-    FOREIGN KEY (busertable_id) REFERENCES busertable(id)
-);
-
 -- 插入示例数据
 INSERT INTO ausertable VALUES ('admin', 'admin');
 
@@ -96,12 +84,23 @@ INSERT INTO goodstype VALUES (1, '服装'), (2, '电子产品'), (3, '家居用�
 
 INSERT INTO busertable (bemail, bpwd) VALUES ('user@example.com', '123456');
 
-ALTER TABLE goodstable
-    ADD COLUMN status INT DEFAULT 1 COMMENT '商品状态：1-上架，0-下架';
-
-
-INSERT INTO goodstable (gname, goprice, grprice, gstore, gpicture, isRecommend, isAdvertisement, status, goodstype_id) 
+-- 1. 插入商品数据 用于测试和上下架功能检测
+INSERT INTO goodstable (gname, goprice, grprice, gstore, gpicture, status, goodstype_id) 
 VALUES 
-('T恤', 50.0, 39.9, 100, '201910274135150096.jpg', 1, 0, 1, 1),
-('手机', 2000.0, 1800.0, 50, '201910280135503341.jpg', 1, 1, 1, 2),
-('沙发', 3000.0, 2500.0, 20, '201910274135059473.jpg', 0, 1, 1, 3);
+('T恤', 50.0, 39.9, 100, '201910274135150096.jpg', 1, 1),
+('手机', 2000.0, 1800.0, 50, '201910280135503341.jpg', 1, 2),
+('沙发', 3000.0, 2500.0, 20, '201910274135059473.jpg', 1, 3);
+
+
+-- 2.数据库升级脚本：删除收藏、推荐、广告功能，添加商品状态字段
+USE shop;
+
+-- 删除收藏表
+DROP TABLE IF EXISTS focustable;
+
+-- 删除商品表中的 isRecommend 和 isAdvertisement 字段
+ALTER TABLE goodstable
+    DROP COLUMN isRecommend;
+
+ALTER TABLE goodstable
+    DROP COLUMN isAdvertisement;
