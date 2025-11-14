@@ -20,6 +20,55 @@ import com.ch.ebusiness.util.MyUtil;
 @Service
 public class CartServiceImpl implements CartService {
 	@Autowired
+	private com.ch.ebusiness.repository.before.UserRepository userRepository;
+
+	@org.springframework.beans.factory.annotation.Autowired
+	private org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder passwordEncoder;
+
+	/**
+	 * 安全的密码修改方法 - 只能修改当前登录用户的密码
+	 */
+	@Override
+	public String updatePasswordSecure(String currentUserEmail, String newPassword) {
+		// 校验当前用户是否存在
+		com.ch.ebusiness.entity.BUser user = userRepository.selectByEmail(currentUserEmail);
+		if (user == null) {
+			return "用户不存在";
+		}
+		// 加密新密码（使用 BCrypt）
+		String encodedPwd = passwordEncoder.encode(newPassword);
+		// 更新数据库
+		int updated = userRepository.updatePasswordByEmail(currentUserEmail, encodedPwd);
+		if (updated == 0) {
+			return "密码修改失败";
+		}
+		return null; // 成功
+	}
+
+	/**
+	 * 旧版本密码修改方法（保留兼容）
+	 */
+	@Override
+	@Deprecated
+	public String updatePassword(HttpSession session, String bemail, String newPassword) {
+		// 校验邮箱是否存在
+		com.ch.ebusiness.entity.BUser user = userRepository.selectByEmail(bemail);
+		if (user == null) {
+			return "邮箱不存在";
+		}
+		// 加密新密码
+		String encodedPwd = passwordEncoder.encode(newPassword);
+		// 更新数据库
+		int updated = userRepository.updatePasswordByEmail(bemail, encodedPwd);
+		if (updated == 0) {
+			return "密码修改失败";
+		}
+		// 清除session，强制重新登录
+		session.invalidate();
+		return null;
+	}
+
+	@Autowired
 	private CartRepository cartRepository;
 	@Autowired
 	private IndexRepository indexRepository;

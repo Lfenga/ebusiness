@@ -3,6 +3,13 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ch.ebusiness.repository.before.UserRepository">
+		<select id="selectByEmail" parameterType="string" resultType="BUser">
+			select * from busertable where bemail = #{param1} limit 1
+		</select>
+
+		<update id="updatePasswordByEmail">
+			update busertable set bpwd = #{param2} where bemail = #{param1}
+		</update>
 	<select id="isUse" parameterType="BUser" resultType="BUser">
 		select * from busertable where bemail = #{bemail}
 	</select>

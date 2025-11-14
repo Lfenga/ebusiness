@@ -113,3 +113,8 @@ ALTER TABLE goodstable
 
 ALTER TABLE goodstable
     ADD CONSTRAINT chk_stock_non_negative CHECK (stock >= 0);
+
+-- 增加密码长度  以适应BCrypt密码加密长度
+ALTER TABLE busertable MODIFY COLUMN bpwd VARCHAR(100) NOT NULL;
+
+ALTER table ausertable MODIFY COLUMN apwd VARCHAR(100) NOT NULL;

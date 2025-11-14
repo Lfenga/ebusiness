@@ -1,36 +1,68 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-<base th:href="@{/}"><!-- 不用base就使用th:src="@{/js/jquery.min.js} -->
+<base th:href="@{/}">
 <meta charset="UTF-8">
 <title>用户信息页面</title>
 <link rel="stylesheet" href="css/bootstrap.min.css" />
+</head>
 <body>
 	<div class="container">
 	<div class="bg-primary"  style="width:100%; height: 70px;padding-top: 10px;">
-	       <h2 align="center">用户信息</h2>
+	       <h2 align="center">用户信息 - 修改密码</h2>
 	   </div>
 		<br><br>
-		<form action="cart/updateUpwd" name="myform" method="post" class="form-horizontal" role="form" >
-			<div class="form-group has-success">
-				<label class="col-sm-2 col-md-2 control-label">邮箱</label>
-				<div class="col-sm-4 col-md-4">
-					<input type="text" class="form-control" readonly="readonly" name="bemail" th:value="${session.bUser.bemail}" />
-				</div>
-			</div>	
-			<div class="form-group has-success">
-				  <label class="col-sm-2 col-md-2 control-label">密码</label>
-				  <div class="col-sm-4 col-md-4">
-		  				<input type="password" class="form-control" name="bpwd" placeholder="请输入您的新密码" />
-				  </div>
-			 </div>
+		<!-- 错误/成功提示 -->
+		<div th:if="${msg}" class="alert alert-warning col-sm-offset-2 col-sm-6" style="clear:both;">
+			<span th:text="${msg}"></span>
+		</div>
+		
+		<form action="cart/updatePassword" name="myform" method="post" class="form-horizontal" role="form" onsubmit="return validateForm();">
+			<!-- 显示当前登录用户 -->
 			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-					<button type="submit"class="btn btn-success" >修改密码</button>
-					<button type="reset" class="btn btn-primary" >重置</button>
+				<label class="col-sm-2 col-md-2 control-label">当前登录邮箱</label>
+				<div class="col-sm-4 col-md-4">
+					<p class="form-control-static" sec:authentication="name">guest@example.com</p>
 				</div>
 			</div>
-		</form>
+			
+			<div class="form-group has-success">
+				<label class="col-sm-2 col-md-2 control-label">新密码</label>
+				<div class="col-sm-4 col-md-4">
+			<input type="password" class="form-control" name="newPassword" placeholder="请输入您的新密码" required minlength="6" />
+				</div>
+			</div>
+			<div class="form-group has-success">
+				<label class="col-sm-2 col-md-2 control-label">确认新密码</label>
+				<div class="col-sm-4 col-md-4">
+			<input type="password" class="form-control" name="confirmPassword" placeholder="请再次输入新密码" required minlength="6" />
+				</div>
+			</div>
+			<div class="form-group has-success">
+				<label class="col-sm-2 col-md-2 control-label">验证码</label>
+				<div class="col-sm-4 col-md-4">
+				<input type="text" class="form-control" name="captcha" placeholder="请输入验证码" required />
+				<img th:src="@{/validateCode}" id="mycode_userinfo" th:attr="onclick=|this.src='@{/validateCode}?'+Math.random()|" style="cursor:pointer;" title="点击刷新验证码" />
+				</div>
+			</div>
+			<div class="form-group">
+			<div class="col-sm-offset-2 col-sm-10">
+			<button type="submit"class="btn btn-success" >修改密码</button>
+			<button type="reset" class="btn btn-primary" >重置</button>
+			</div>
+			</div>
+			</form>
+			<script>
+			function validateForm() {
+				var newPwd = document.myform.newPassword.value;
+				var confirmPwd = document.myform.confirmPassword.value;
+				var captcha = document.myform.captcha.value;
+				if (newPwd.length < 6) { alert('新密码至少6位'); return false; }
+				if (newPwd !== confirmPwd) { alert('两次输入的新密码不一致'); return false; }
+				if (!captcha) { alert('验证码不能为空'); return false; }
+				return true;
+			}
+			</script>
 	</div>
 </body>
 </html>

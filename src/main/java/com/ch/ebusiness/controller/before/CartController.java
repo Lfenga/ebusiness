@@ -3,6 +3,8 @@ package com.ch.ebusiness.controller.before;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -65,8 +67,46 @@ public class CartController extends BeforeBaseController {
 		return "user/userInfo";
 	}
 
-	@RequestMapping("/updateUpwd")
-	public String updateUpwd(HttpSession session, String bpwd) {
-		return cartService.updateUpwd(session, bpwd);
+	@RequestMapping("/updatePassword")
+	public String updatePassword(HttpSession session, Model model, String newPassword,
+			String confirmPassword, String captcha) {
+		// 从 Spring Security 上下文获取当前登录用户
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication == null || !authentication.isAuthenticated()
+				|| "anonymousUser".equals(authentication.getPrincipal())) {
+			model.addAttribute("msg", "请先登录");
+			return "redirect:/user/toLogin";
+		}
+		String currentUserEmail = authentication.getName(); // 当前登录用户的邮箱
+
+		// 参数校验
+		if (newPassword == null || newPassword.length() < 6) {
+			model.addAttribute("msg", "新密码至少6位");
+			return "user/userInfo";
+		}
+		if (!newPassword.equals(confirmPassword)) {
+			model.addAttribute("msg", "两次输入的新密码不一致");
+			return "user/userInfo";
+		}
+		String sessionCode = (String) session.getAttribute("rand");
+		if (captcha == null || sessionCode == null || !captcha.equalsIgnoreCase(sessionCode)) {
+			model.addAttribute("msg", "验证码错误");
+			return "user/userInfo";
+		}
+
+		// 验证码使用后清除
+		session.removeAttribute("rand");
+
+		// 调用 Service 修改密码（使用当前登录用户的邮箱）
+		String result = cartService.updatePasswordSecure(currentUserEmail, newPassword);
+		if (result != null) {
+			model.addAttribute("msg", result);
+			return "user/userInfo";
+		}
+
+		// 密码修改成功，登出并重定向到登录页
+		SecurityContextHolder.clearContext(); // 清除安全上下文
+		session.invalidate(); // 清除session
+		return "redirect:/user/toLogin?passwordChanged=true";
 	}
 }
