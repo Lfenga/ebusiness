@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		select * from goodstable where goodstype_id = #{goodstype_id}
 	</select>
 	<!-- 添加类型 -->
-	<insert id="addType" parameterType="GoodsType">
-		insert into goodstype (id, typename) values(null, #{typename})
+	<insert id="addType" parameterType="GoodsType" useGeneratedKeys="true" keyProperty="id">
+		insert into goodstype (id,typename) values (null, #{typename})
 	</insert>
 </mapper>

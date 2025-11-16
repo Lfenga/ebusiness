@@ -32,7 +32,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         // 注意：这里的密码应该是数据库中存储的加密密码
         return User.builder()
                 .username(user.getBemail())
-                .password(user.getBpwd()) // 数据库存储的密码（BCrypt或MD5）
+                .password(user.getBpwd())
                 .authorities(AuthorityUtils.createAuthorityList("ROLE_USER"))
                 .accountExpired(false)
                 .accountLocked(false)

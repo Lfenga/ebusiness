@@ -6,4 +6,42 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="login" parameterType="AUser" resultType="AUser">
 		select * from ausertable where aname = #{aname} and apwd = #{apwd}
 	</select>
+	
+	<select id="selectByAname" resultType="AUser">
+		select * from ausertable where aname = #{aname}
+	</select>
+	
+	<select id="selectAllAdmins" resultType="AUser">
+		select * from ausertable
+		order by create_time desc
+		limit #{offset}, #{limit}
+	</select>
+	
+	<select id="countAllAdmins" resultType="int">
+		select count(*) from ausertable
+	</select>
+	
+	<insert id="insertAdmin" parameterType="AUser" useGeneratedKeys="true" keyProperty="id">
+		insert into ausertable (aname, apwd, aemail, arealname, aphone, astatus, create_time)
+		values (#{aname}, #{apwd}, #{aemail}, #{arealname}, #{aphone}, #{astatus}, now())
+	</insert>
+	
+	<update id="updateAdmin" parameterType="AUser">
+		update ausertable
+		set aemail = #{aemail},
+		    arealname = #{arealname},
+		    aphone = #{aphone},
+		    astatus = #{astatus}
+		where id = #{id}
+	</update>
+	
+	<update id="updateLastLoginTime">
+		update ausertable
+		set last_login_time = now()
+		where id = #{id}
+	</update>
+	
+	<delete id="deleteAdmin">
+		delete from ausertable where id = #{id}
+	</delete>
 </mapper>

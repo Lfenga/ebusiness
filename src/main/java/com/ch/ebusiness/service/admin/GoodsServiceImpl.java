@@ -71,7 +71,7 @@ public class GoodsServiceImpl implements GoodsService {
 				return "redirect:/goods/selectAllGoodsByPage?currentPage=1&act=select";
 			// 失败
 			return "admin/addGoods";
-		} else {// 修改
+		} else {// 修改 (act=update)
 			int n = goodsRepository.updateGoods(goods);
 			if (n > 0)// 成功
 				return "redirect:/goods/selectAllGoodsByPage?currentPage=1&act=updateSelect";

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<title>管理员个人信息</title>
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div th:replace="admin/header::myheader"></div>
+<div class="container" style="margin-top: 70px;">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">管理员个人信息</h3>
+		</div>
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-md-8 col-md-offset-2">
+					<table class="table table-bordered">
+						<tbody>
+							<tr>
+								<th width="30%" class="active">管理员ID</th>
+								<td th:text="${admin.id}">1</td>
+							</tr>
+							<tr>
+								<th class="active">用户名</th>
+								<td th:text="${admin.aname}">admin</td>
+							</tr>
+							<tr>
+								<th class="active">真实姓名</th>
+								<td th:text="${admin.arealname != null ? admin.arealname : '未设置'}">管理员</td>
+							</tr>
+							<tr>
+								<th class="active">邮箱</th>
+								<td th:text="${admin.aemail != null ? admin.aemail : '未设置'}">admin@ebusiness.com</td>
+							</tr>
+							<tr>
+								<th class="active">手机号</th>
+								<td th:text="${admin.aphone != null ? admin.aphone : '未设置'}">13800138000</td>
+							</tr>
+							<tr>
+								<th class="active">账号状态</th>
+								<td>
+									<span class="label label-success" th:if="${admin.astatus == 1}">启用</span>
+									<span class="label label-danger" th:if="${admin.astatus == 0}">禁用</span>
+								</td>
+							</tr>
+							<tr>
+								<th class="active">创建时间</th>
+								<td th:text="${admin.createTime != null ? #dates.format(admin.createTime, 'yyyy-MM-dd HH:mm:ss') : '未知'}">2024-01-01 12:00:00</td>
+							</tr>
+							<tr>
+								<th class="active">上次登录时间</th>
+								<td th:text="${admin.lastLoginTime != null ? #dates.format(admin.lastLoginTime, 'yyyy-MM-dd HH:mm:ss') : '首次登录'}">2024-01-01 12:00:00</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="text-center" style="margin-top: 20px;">
+						<a th:href="@{/goods/selectAllGoodsByPage?currentPage=1&act=select}" class="btn btn-primary">返回首页</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>

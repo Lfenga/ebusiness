@@ -67,9 +67,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/css/**", "/js/**", "/fonts/**", "/images/**").permitAll()
                 // 需要登录才能访问的URL（用户相关功能）
                 .antMatchers("/cart/**", "/user/exit").authenticated()
-                // 管理员URL单独配置（这里暂时允许所有，后续可加 hasRole("ADMIN")）
-                .antMatchers("/admin/**").permitAll()
-                // 其他请求允许匿名访问
+                // 管理员URL不走Spring Security，使用session验证
+                .antMatchers("/admin/**", "/goods/**", "/type/**", "/selectOrder", "/selectUser", "/deleteUser",
+                        "/loginOut", "/adminLog/**")
+                .permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

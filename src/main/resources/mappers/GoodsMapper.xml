@@ -14,7 +14,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		order by id desc limit #{startIndex}, #{perPageSize} 
 	</select>
 	<!-- 添加商品 -->
-	<insert id="addGoods" parameterType="Goods">
+	<insert id="addGoods" parameterType="Goods" useGeneratedKeys="true" keyProperty="id">
 		insert into goodstable (id,gname,goprice,grprice,stock,gpicture,status,goodstype_id) 
 		values (null, #{gname}, #{goprice}, #{grprice}, #{stock}, #{gpicture}, #{status}, #{goodstype_id})
 	</insert>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<title>管理员操作日志</title>
+<link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<div th:replace="admin/header::myheader"></div>
+<div class="container" style="margin-top: 70px;">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h3 class="panel-title">管理员操作日志</h3>
+		</div>
+		<div class="panel-body">
+			<!-- 查询条件表单 -->
+			<form class="form-inline" method="get" th:action="@{/adminLog/selectLogs}" style="margin-bottom: 20px;">
+				<div class="form-group">
+					<label>管理员ID：</label>
+					<input type="number" name="adminId" class="form-control" th:value="${adminId}" placeholder="管理员ID"/>
+				</div>
+				<div class="form-group" style="margin-left: 10px;">
+					<label>模块：</label>
+					<select name="module" class="form-control">
+						<option value="">全部</option>
+						<option value="商品管理" th:selected="${module == '商品管理'}">商品管理</option>
+						<option value="商品类型管理" th:selected="${module == '商品类型管理'}">商品类型管理</option>
+						<option value="用户管理" th:selected="${module == '用户管理'}">用户管理</option>
+						<option value="订单管理" th:selected="${module == '订单管理'}">订单管理</option>
+						<option value="日志管理" th:selected="${module == '日志管理'}">日志管理</option>
+						<option value="系统管理" th:selected="${module == '系统管理'}">系统管理</option>
+					</select>
+				</div>
+				<div class="form-group" style="margin-left: 10px;">
+					<label>操作类型：</label>
+					<select name="operationType" class="form-control">
+						<option value="">全部</option>
+						<option value="ADD" th:selected="${operationType == 'ADD'}">添加</option>
+						<option value="UPDATE" th:selected="${operationType == 'UPDATE'}">修改</option>
+						<option value="DELETE" th:selected="${operationType == 'DELETE'}">删除</option>
+					</select>
+				</div>
+				<div class="form-group" style="margin-left: 10px;">
+					<label>状态：</label>
+					<select name="status" class="form-control">
+						<option value="">全部</option>
+						<option value="SUCCESS" th:selected="${status == 'SUCCESS'}">成功</option>
+						<option value="FAIL" th:selected="${status == 'FAIL'}">失败</option>
+					</select>
+				</div>
+				<div class="form-group" style="margin-left: 10px;">
+					<label>开始时间：</label>
+					<input type="date" name="startTime" class="form-control" 
+					       th:value="${startTime != null ? #dates.format(startTime, 'yyyy-MM-dd') : ''}"/>
+				</div>
+				<div class="form-group" style="margin-left: 10px;">
+					<label>结束时间：</label>
+					<input type="date" name="endTime" class="form-control"
+					       th:value="${endTime != null ? #dates.format(endTime, 'yyyy-MM-dd') : ''}"/>
+				</div>
+				<button type="submit" class="btn btn-primary" style="margin-left: 10px;">查询</button>
+				<a th:href="@{/adminLog/selectLogs}" class="btn btn-default" style="margin-left: 10px;">重置</a>
+			</form>
+			
+			<!-- 统计信息 -->
+			<div class="alert alert-info" style="margin-bottom: 15px;">
+				共找到 <strong th:text="${totalCount}">0</strong> 条记录
+			</div>
+			
+			<!-- 日志列表表格 -->
+			<table class="table table-striped table-bordered table-hover">
+				<thead>
+					<tr class="info">
+						<th>日志ID</th>
+						<th>管理员</th>
+						<th>真实姓名</th>
+						<th>模块</th>
+						<th>操作类型</th>
+						<th>操作描述</th>
+						<th>目标类型</th>
+						<th>目标ID</th>
+						<th>IP地址</th>
+						<th>浏览器</th>
+						<th>操作时间</th>
+						<th>耗时(ms)</th>
+						<th>状态</th>
+						<th>错误信息</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:if="${#lists.isEmpty(logs)}">
+						<td colspan="14" class="text-center">暂无日志记录</td>
+					</tr>
+					<tr th:each="log : ${logs}">
+						<td th:text="${log.id}">1</td>
+						<td th:text="${log.adminName}">admin</td>
+						<td th:text="${log.adminRealname}">管理员</td>
+						<td th:text="${log.module}">商品管理</td>
+						<td>
+							<span class="label label-success" th:if="${log.operationType == 'ADD'}" th:text="${log.operationType}">ADD</span>
+							<span class="label label-primary" th:if="${log.operationType == 'UPDATE'}" th:text="${log.operationType}">UPDATE</span>
+							<span class="label label-danger" th:if="${log.operationType == 'DELETE'}" th:text="${log.operationType}">DELETE</span>
+							<span class="label label-info" th:if="${log.operationType == 'QUERY'}" th:text="${log.operationType}">QUERY</span>
+						</td>
+						<td th:text="${log.operationDesc}">添加商品</td>
+						<td th:text="${log.targetType}">Goods</td>
+						<td th:text="${log.targetId}">100</td>
+						<td th:text="${log.ipAddress}">127.0.0.1</td>
+						<td th:text="${log.browserInfo}">Chrome</td>
+						<td th:text="${#dates.format(log.operationTime, 'yyyy-MM-dd HH:mm:ss')}">2024-01-01 12:00:00</td>
+						<td th:text="${log.executionTime}">150</td>
+						<td>
+							<span class="label label-success" th:if="${log.status == 'SUCCESS'}">成功</span>
+							<span class="label label-danger" th:if="${log.status == 'FAIL'}">失败</span>
+						</td>
+						<td>
+							<span th:if="${log.errorMsg != null and log.errorMsg != ''}" 
+							      th:title="${log.errorMsg}" 
+							      style="cursor: pointer; color: red;">
+								<span th:text="${#strings.length(log.errorMsg) > 20 ? #strings.substring(log.errorMsg, 0, 20) + '...' : log.errorMsg}"></span>
+							</span>
+							<span th:if="${log.errorMsg == null or log.errorMsg == ''}">-</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<!-- 分页导航 -->
+			<nav aria-label="Page navigation" style="text-align: center;">
+				<ul class="pagination">
+					<li th:class="${currentPage == 1 ? 'disabled' : ''}">
+						<a th:href="@{/adminLog/selectLogs(currentPage=${currentPage - 1}, adminId=${adminId}, module=${module}, operationType=${operationType}, status=${status}, startTime=${startTime}, endTime=${endTime})}" 
+						   aria-label="Previous">
+							<span aria-hidden="true">&laquo;</span>
+						</a>
+					</li>
+					<li th:each="i : ${#numbers.sequence(1, totalPage)}" 
+					    th:class="${i == currentPage ? 'active' : ''}">
+						<a th:href="@{/adminLog/selectLogs(currentPage=${i}, adminId=${adminId}, module=${module}, operationType=${operationType}, status=${status}, startTime=${startTime}, endTime=${endTime})}" 
+						   th:text="${i}">1</a>
+					</li>
+					<li th:class="${currentPage == totalPage ? 'disabled' : ''}">
+						<a th:href="@{/adminLog/selectLogs(currentPage=${currentPage + 1}, adminId=${adminId}, module=${module}, operationType=${operationType}, status=${status}, startTime=${startTime}, endTime=${endTime})}" 
+						   aria-label="Next">
+							<span aria-hidden="true">&raquo;</span>
+						</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+</body>
+</html>

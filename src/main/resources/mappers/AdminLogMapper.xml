@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.ch.ebusiness.repository.admin.AdminLogRepository">
+	
+	<resultMap id="AdminOperationLogResultMap" type="com.ch.ebusiness.entity.AdminOperationLog">
+		<id column="id" property="id" jdbcType="BIGINT"/>
+		<result column="admin_id" property="adminId" jdbcType="INTEGER"/>
+		<result column="admin_name" property="adminName" jdbcType="VARCHAR"/>
+		<result column="admin_realname" property="adminRealname" jdbcType="VARCHAR"/>
+		<result column="operation_type" property="operationType" jdbcType="VARCHAR"/>
+		<result column="module" property="module" jdbcType="VARCHAR"/>
+		<result column="operation_desc" property="operationDesc" jdbcType="VARCHAR"/>
+		<result column="target_type" property="targetType" jdbcType="VARCHAR"/>
+		<result column="target_id" property="targetId" jdbcType="VARCHAR"/>
+		<result column="request_method" property="requestMethod" jdbcType="VARCHAR"/>
+		<result column="request_params" property="requestParams" jdbcType="LONGVARCHAR"/>
+		<result column="ip_address" property="ipAddress" jdbcType="VARCHAR"/>
+		<result column="browser_info" property="browserInfo" jdbcType="VARCHAR"/>
+		<result column="operation_time" property="operationTime" jdbcType="TIMESTAMP"/>
+		<result column="execution_time" property="executionTime" jdbcType="BIGINT"/>
+		<result column="status" property="status" jdbcType="VARCHAR"/>
+		<result column="error_msg" property="errorMsg" jdbcType="LONGVARCHAR"/>
+	</resultMap>
+	
+	<insert id="insertLog" parameterType="com.ch.ebusiness.entity.AdminOperationLog">
+		INSERT INTO admin_operation_log (
+			admin_id, admin_name, admin_realname, operation_type, module,
+			operation_desc, target_type, target_id, request_method, request_params,
+			ip_address, browser_info, operation_time, execution_time, status, error_msg
+		) VALUES (
+			#{adminId}, #{adminName}, #{adminRealname}, #{operationType}, #{module},
+			#{operationDesc}, #{targetType}, #{targetId}, #{requestMethod}, #{requestParams},
+			#{ipAddress}, #{browserInfo}, #{operationTime}, #{executionTime}, #{status}, #{errorMsg}
+		)
+	</insert>
+	
+	<select id="selectAllLogs" resultMap="AdminOperationLogResultMap">
+		SELECT * FROM admin_operation_log
+		ORDER BY operation_time DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+	
+	<select id="countAllLogs" resultType="int">
+		SELECT COUNT(*) FROM admin_operation_log
+	</select>
+	
+	<select id="selectLogsByAdminId" resultMap="AdminOperationLogResultMap">
+		SELECT * FROM admin_operation_log
+		WHERE admin_id = #{adminId}
+		ORDER BY operation_time DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+	
+	<select id="selectLogsByModule" resultMap="AdminOperationLogResultMap">
+		SELECT * FROM admin_operation_log
+		WHERE module = #{module}
+		ORDER BY operation_time DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+	
+	<select id="selectLogsByOperationType" resultMap="AdminOperationLogResultMap">
+		SELECT * FROM admin_operation_log
+		WHERE operation_type = #{operationType}
+		ORDER BY operation_time DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+	
+	<select id="selectLogsByTimeRange" resultMap="AdminOperationLogResultMap">
+		SELECT * FROM admin_operation_log
+		WHERE operation_time BETWEEN #{startTime} AND #{endTime}
+		ORDER BY operation_time DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+	
+	<select id="selectLogsByConditions" resultMap="AdminOperationLogResultMap">
+		SELECT * FROM admin_operation_log
+		<where>
+			<if test="adminId != null">
+				AND admin_id = #{adminId}
+			</if>
+			<if test="module != null and module != ''">
+				AND module = #{module}
+			</if>
+			<if test="operationType != null and operationType != ''">
+				AND operation_type = #{operationType}
+			</if>
+			<if test="status != null and status != ''">
+				AND status = #{status}
+			</if>
+			<if test="startTime != null">
+				AND operation_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null">
+				AND operation_time &lt;= #{endTime}
+			</if>
+		</where>
+		ORDER BY operation_time DESC
+		LIMIT #{offset}, #{limit}
+	</select>
+	
+	<select id="countLogsByConditions" resultType="int">
+		SELECT COUNT(*) FROM admin_operation_log
+		<where>
+			<if test="adminId != null">
+				AND admin_id = #{adminId}
+			</if>
+			<if test="module != null and module != ''">
+				AND module = #{module}
+			</if>
+			<if test="operationType != null and operationType != ''">
+				AND operation_type = #{operationType}
+			</if>
+			<if test="status != null and status != ''">
+				AND status = #{status}
+			</if>
+			<if test="startTime != null">
+				AND operation_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null">
+				AND operation_time &lt;= #{endTime}
+			</if>
+		</where>
+	</select>
+	
+</mapper>
