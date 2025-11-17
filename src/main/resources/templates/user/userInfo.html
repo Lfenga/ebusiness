@@ -3,66 +3,130 @@
 <head>
 <base th:href="@{/}">
 <meta charset="UTF-8">
-<title>用户信息页面</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>修改密码 - eBusiness</title>
 <link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/custom.css" />
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script>
+	function validateForm() {
+		var newPwd = document.myform.newPassword.value;
+		var confirmPwd = document.myform.confirmPassword.value;
+		var captcha = document.myform.captcha.value;
+		
+		if (newPwd.length < 6) {
+			showAlert('新密码至少需要6位字符', 'warning');
+			return false;
+		}
+		if (newPwd !== confirmPwd) {
+			showAlert('两次输入的新密码不一致', 'warning');
+			return false;
+		}
+		if (!captcha) {
+			showAlert('请输入验证码', 'warning');
+			return false;
+		}
+		return true;
+	}
+	
+	function showAlert(message, type) {
+		var alertClass = type === 'warning' ? 'alert-warning' : 'alert-success';
+		var alertHtml = '<div class="alert alert-custom ' + alertClass + ' alert-dismissible" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; min-width: 300px;">' +
+			'<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>' +
+			'<strong>' + message + '</strong></div>';
+		$('body').append(alertHtml);
+		setTimeout(function() {
+			$('.alert').fadeOut(500, function() { $(this).remove(); });
+		}, 3000);
+	}
+</script>
+<style>
+	body {
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		min-height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+	}
+</style>
 </head>
 <body>
-	<div class="container">
-	<div class="bg-primary"  style="width:100%; height: 70px;padding-top: 10px;">
-	       <h2 align="center">用户信息 - 修改密码</h2>
-	   </div>
-		<br><br>
-		<!-- 错误/成功提示 -->
-		<div th:if="${msg}" class="alert alert-warning col-sm-offset-2 col-sm-6" style="clear:both;">
-			<span th:text="${msg}"></span>
+	<div class="form-custom" style="max-width: 600px; width: 100%;">
+		<div class="form-header">
+			<h3>🔐 修改密码</h3>
+			<p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">为了您的账户安全，请定期更换密码</p>
 		</div>
 		
-		<form action="cart/updatePassword" name="myform" method="post" class="form-horizontal" role="form" onsubmit="return validateForm();">
+		<!-- 错误/成功提示 -->
+		<div th:if="${msg}" class="alert alert-custom alert-warning">
+			<strong>⚠️ </strong><span th:text="${msg}"></span>
+		</div>
+		
+		<form action="cart/updatePassword" name="myform" method="post" role="form" onsubmit="return validateForm();">
 			<!-- 显示当前登录用户 -->
 			<div class="form-group">
-				<label class="col-sm-2 col-md-2 control-label">当前登录邮箱</label>
-				<div class="col-sm-4 col-md-4">
-					<p class="form-control-static" sec:authentication="name">guest@example.com</p>
+				<label>👤 当前登录邮箱</label>
+				<div style="padding: 12px 20px; background: #F8F9FA; border-radius: 8px; color: #2C3E50; font-weight: 600;">
+					<span sec:authentication="name">guest@example.com</span>
 				</div>
 			</div>
 			
-			<div class="form-group has-success">
-				<label class="col-sm-2 col-md-2 control-label">新密码</label>
-				<div class="col-sm-4 col-md-4">
-			<input type="password" class="form-control" name="newPassword" placeholder="请输入您的新密码" required minlength="6" />
-				</div>
-			</div>
-			<div class="form-group has-success">
-				<label class="col-sm-2 col-md-2 control-label">确认新密码</label>
-				<div class="col-sm-4 col-md-4">
-			<input type="password" class="form-control" name="confirmPassword" placeholder="请再次输入新密码" required minlength="6" />
-				</div>
-			</div>
-			<div class="form-group has-success">
-				<label class="col-sm-2 col-md-2 control-label">验证码</label>
-				<div class="col-sm-4 col-md-4">
-				<input type="text" class="form-control" name="captcha" placeholder="请输入验证码" required />
-				<img th:src="@{/validateCode}" id="mycode_userinfo" th:attr="onclick=|this.src='@{/validateCode}?'+Math.random()|" style="cursor:pointer;" title="点击刷新验证码" />
-				</div>
-			</div>
 			<div class="form-group">
-			<div class="col-sm-offset-2 col-sm-10">
-			<button type="submit"class="btn btn-success" >修改密码</button>
-			<button type="reset" class="btn btn-primary" >重置</button>
+				<label>🔑 新密码</label>
+				<input type="password" class="form-control" name="newPassword" 
+					   placeholder="请输入6-20位新密码" required minlength="6" maxlength="20" />
+				<p style="margin-top: 8px; color: #6C757D; font-size: 13px;">
+					💡 建议使用字母、数字和符号的组合
+				</p>
 			</div>
+			
+			<div class="form-group">
+				<label>🔑 确认新密码</label>
+				<input type="password" class="form-control" name="confirmPassword" 
+					   placeholder="请再次输入新密码" required minlength="6" maxlength="20" />
 			</div>
-			</form>
-			<script>
-			function validateForm() {
-				var newPwd = document.myform.newPassword.value;
-				var confirmPwd = document.myform.confirmPassword.value;
-				var captcha = document.myform.captcha.value;
-				if (newPwd.length < 6) { alert('新密码至少6位'); return false; }
-				if (newPwd !== confirmPwd) { alert('两次输入的新密码不一致'); return false; }
-				if (!captcha) { alert('验证码不能为空'); return false; }
-				return true;
-			}
-			</script>
+			
+			<div class="form-group">
+				<label>🔢 验证码</label>
+				<div style="display: flex; gap: 10px; align-items: center;">
+					<input type="text" class="form-control" name="captcha" 
+						   placeholder="请输入验证码" required style="flex: 1;" />
+					<img th:src="@{/validateCode}" id="mycode_userinfo" 
+						 th:attr="onclick=|this.src='@{/validateCode}?'+Math.random()|" 
+						 style="height: 46px; border-radius: 8px; cursor: pointer; border: 2px solid #E9ECEF;"
+						 title="点击刷新验证码" />
+				</div>
+				<p style="margin-top: 8px; color: #6C757D; font-size: 13px;">
+					💡 看不清？点击图片刷新
+				</p>
+			</div>
+			
+			<div class="form-group" style="margin-top: 30px;">
+				<button type="submit" class="btn btn-custom-primary btn-block btn-lg">
+					修改密码
+				</button>
+			</div>
+			
+			<div class="form-group text-center">
+				<button type="reset" class="btn btn-default">重置</button>
+				<span style="margin: 0 10px; color: #CCC;">|</span>
+				<a href="/" style="color: #667eea; font-weight: 600;">返回首页</a>
+			</div>
+		</form>
+		
+		<!-- 安全提示 -->
+		<div style="margin-top: 30px; padding: 20px; background: #F8F9FA; border-radius: 12px;">
+			<h4 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #2C3E50;">
+				🛡️ 安全建议
+			</h4>
+			<ul style="margin: 0; padding-left: 20px; color: #6C757D; font-size: 13px; line-height: 1.8;">
+				<li>定期更换密码，建议每3个月更换一次</li>
+				<li>不要使用过于简单的密码</li>
+				<li>不要在多个网站使用相同密码</li>
+			</ul>
+		</div>
 	</div>
 </body>
 </html>

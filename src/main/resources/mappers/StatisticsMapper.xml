@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ch.ebusiness.repository.admin.StatisticsRepository">
+
+    <!-- ==================== 仪表盘汇总数据 ==================== -->
+
+    <select id="getTotalUsers" resultType="long">
+        SELECT COUNT(*) FROM busertable
+    </select>
+
+    <select id="getTotalOrders" resultType="long">
+        SELECT COUNT(*) FROM orderbasetable
+    </select>
+
+    <select id="getTotalSales" resultType="double">
+        SELECT IFNULL(SUM(amount), 0) FROM orderbasetable
+    </select>
+
+    <select id="getTodayOrders" resultType="long">
+        SELECT COUNT(*) FROM orderbasetable
+        WHERE DATE(orderdate) = CURDATE()
+    </select>
+
+    <select id="getTodaySales" resultType="double">
+        SELECT IFNULL(SUM(amount), 0) FROM orderbasetable
+        WHERE DATE(orderdate) = CURDATE()
+    </select>
+
+    <select id="getNewUsersToday" resultType="long">
+        SELECT COUNT(*) FROM busertable
+        WHERE DATE(create_time) = CURDATE()
+    </select>
+
+    <select id="getCartUsers" resultType="long">
+        SELECT COUNT(DISTINCT busertable_id) FROM carttable
+    </select>
+
+    <select id="getOrderUsers" resultType="long">
+        SELECT COUNT(DISTINCT busertable_id) FROM orderbasetable
+    </select>
+
+    <select id="getLowStockCount" resultType="long">
+        SELECT COUNT(*) FROM goodstable
+        WHERE stock &lt; #{threshold}
+    </select>
+
+    <!-- ==================== 销售趋势分析 ==================== -->
+
+    <select id="getSalesTrendByDay" resultType="com.ch.ebusiness.dto.SalesTrendDTO">
+        SELECT
+            DATE_FORMAT(orderdate, '%Y-%m-%d') as date,
+            COUNT(*) as orderCount,
+            IFNULL(SUM(amount), 0) as salesAmount
+        FROM orderbasetable
+        WHERE orderdate >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+        GROUP BY DATE_FORMAT(orderdate, '%Y-%m-%d')
+        ORDER BY date ASC
+    </select>
+
+    <select id="getSalesTrendByWeek" resultType="com.ch.ebusiness.dto.SalesTrendDTO">
+        SELECT
+            DATE_FORMAT(orderdate, '%Y-W%u') as date,
+            COUNT(*) as orderCount,
+            IFNULL(SUM(amount), 0) as salesAmount
+        FROM orderbasetable
+        WHERE orderdate >= DATE_SUB(CURDATE(), INTERVAL #{weeks} WEEK)
+        GROUP BY DATE_FORMAT(orderdate, '%Y-W%u')
+        ORDER BY date ASC
+    </select>
+
+    <select id="getSalesTrendByMonth" resultType="com.ch.ebusiness.dto.SalesTrendDTO">
+        SELECT
+            DATE_FORMAT(orderdate, '%Y-%m') as date,
+            COUNT(*) as orderCount,
+            IFNULL(SUM(amount), 0) as salesAmount
+        FROM orderbasetable
+        WHERE orderdate >= DATE_SUB(CURDATE(), INTERVAL #{months} MONTH)
+        GROUP BY DATE_FORMAT(orderdate, '%Y-%m')
+        ORDER BY date ASC
+    </select>
+
+    <!-- ==================== 商品销售排行 ==================== -->
+
+    <select id="getGoodsRankByCount" resultType="com.ch.ebusiness.dto.GoodsRankDTO">
+        SELECT
+            g.id as goodsId,
+            g.gname as goodsName,
+            SUM(od.shoppingnum) as salesCount,
+            SUM(od.shoppingnum * g.grprice) as salesAmount,
+            gt.typename as typeName
+        FROM orderdetail od
+        INNER JOIN goodstable g ON od.goodstable_id = g.id
+        LEFT JOIN goodstype gt ON g.goodstype_id = gt.id
+        GROUP BY g.id, g.gname, gt.typename
+        ORDER BY salesCount DESC
+        LIMIT #{limit}
+    </select>
+
+    <select id="getGoodsRankByAmount" resultType="com.ch.ebusiness.dto.GoodsRankDTO">
+        SELECT
+            g.id as goodsId,
+            g.gname as goodsName,
+            SUM(od.shoppingnum) as salesCount,
+            SUM(od.shoppingnum * g.grprice) as salesAmount,
+            gt.typename as typeName
+        FROM orderdetail od
+        INNER JOIN goodstable g ON od.goodstable_id = g.id
+        LEFT JOIN goodstype gt ON g.goodstype_id = gt.id
+        GROUP BY g.id, g.gname, gt.typename
+        ORDER BY salesAmount DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- ==================== 商品类型分析 ==================== -->
+
+    <select id="getTypeSales" resultType="com.ch.ebusiness.dto.TypeSalesDTO">
+        SELECT
+            gt.id as typeId,
+            gt.typename as typeName,
+            IFNULL(SUM(od.shoppingnum), 0) as salesCount,
+            IFNULL(SUM(od.shoppingnum * g.grprice), 0) as salesAmount
+        FROM goodstype gt
+        LEFT JOIN goodstable g ON gt.id = g.goodstype_id
+        LEFT JOIN orderdetail od ON g.id = od.goodstable_id
+        GROUP BY gt.id, gt.typename
+        ORDER BY salesAmount DESC
+    </select>
+
+    <select id="getTypeGoodsCount" resultType="map">
+        SELECT
+            gt.typename as name,
+            COUNT(g.id) as value
+        FROM goodstype gt
+        LEFT JOIN goodstable g ON gt.id = g.goodstype_id
+        GROUP BY gt.id, gt.typename
+    </select>
+
+    <!-- ==================== 用户行为分析 ==================== -->
+
+    <select id="getUserActivityTrend" resultType="com.ch.ebusiness.dto.UserActivityDTO">
+        SELECT
+            DATE_FORMAT(dates.date, '%Y-%m-%d') as date,
+            IFNULL(nu.newUsers, 0) as newUsers,
+            IFNULL(au.activeUsers, 0) as activeUsers
+        FROM (
+            SELECT DATE_SUB(CURDATE(), INTERVAL n DAY) as date
+            FROM (
+                SELECT 0 n UNION SELECT 1 UNION SELECT 2 UNION SELECT 3 UNION SELECT 4
+                UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9
+                UNION SELECT 10 UNION SELECT 11 UNION SELECT 12 UNION SELECT 13 UNION SELECT 14
+                UNION SELECT 15 UNION SELECT 16 UNION SELECT 17 UNION SELECT 18 UNION SELECT 19
+                UNION SELECT 20 UNION SELECT 21 UNION SELECT 22 UNION SELECT 23 UNION SELECT 24
+                UNION SELECT 25 UNION SELECT 26 UNION SELECT 27 UNION SELECT 28 UNION SELECT 29
+            ) numbers
+            WHERE n &lt; #{days}
+        ) dates
+        LEFT JOIN (
+            SELECT DATE(create_time) as date, COUNT(*) as newUsers
+            FROM busertable
+            WHERE create_time >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+            GROUP BY DATE(create_time)
+        ) nu ON dates.date = nu.date
+        LEFT JOIN (
+            SELECT DATE(orderdate) as date, COUNT(DISTINCT busertable_id) as activeUsers
+            FROM orderbasetable
+            WHERE orderdate >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+            GROUP BY DATE(orderdate)
+        ) au ON dates.date = au.date
+        ORDER BY dates.date ASC
+    </select>
+
+    <!-- ==================== 库存管理 ==================== -->
+
+    <select id="getLowStockGoods" resultType="com.ch.ebusiness.dto.StockWarningDTO">
+        SELECT
+            g.id as goodsId,
+            g.gname as goodsName,
+            g.stock as stock,
+            gt.typename as typeName,
+            g.status as status
+        FROM goodstable g
+        LEFT JOIN goodstype gt ON g.goodstype_id = gt.id
+        WHERE g.stock &lt; #{threshold}
+        ORDER BY g.stock ASC
+    </select>
+
+    <select id="getGoodsStatusDistribution" resultType="map">
+        SELECT
+            CASE
+                WHEN status = 1 THEN '上架'
+                WHEN status = 0 THEN '下架'
+                ELSE '未知'
+            END as name,
+            COUNT(*) as value
+        FROM goodstable
+        GROUP BY status
+    </select>
+
+    <!-- ==================== 订单分析 ==================== -->
+
+    <select id="getOrderStatusDistribution" resultType="com.ch.ebusiness.dto.OrderStatusDTO">
+        SELECT
+            status,
+            CASE
+                WHEN status = 0 THEN '待付款'
+                WHEN status = 1 THEN '已付款'
+                WHEN status = 2 THEN '已完成'
+                ELSE '其他'
+            END as statusName,
+            COUNT(*) as count
+        FROM orderbasetable
+        GROUP BY status
+    </select>
+
+    <!-- ==================== 管理员操作统计 ==================== -->
+
+    <select id="getAdminOperationTypeDistribution" resultType="map">
+        SELECT
+            operation_type as name,
+            COUNT(*) as value
+        FROM admin_operation_log
+        WHERE operation_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        GROUP BY operation_type
+    </select>
+
+    <select id="getAdminOperationModuleDistribution" resultType="map">
+        SELECT
+            module as name,
+            COUNT(*) as value
+        FROM admin_operation_log
+        WHERE operation_time >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
+        GROUP BY module
+        ORDER BY value DESC
+    </select>
+
+    <!-- ==================== 热力图数据 ==================== -->
+
+    <select id="getHourActivityHeatmap" resultType="com.ch.ebusiness.dto.HourActivityDTO">
+        SELECT
+            HOUR(orderdate) as hour,
+            DAYOFWEEK(orderdate) as weekday,
+            COUNT(*) as orderCount
+        FROM orderbasetable
+        WHERE orderdate >= DATE_SUB(CURDATE(), INTERVAL #{days} DAY)
+        GROUP BY HOUR(orderdate), DAYOFWEEK(orderdate)
+    </select>
+
+    <!-- ==================== 价格与销量关系 ==================== -->
+
+    <select id="getPriceVsSalesData" resultType="map">
+        SELECT
+            g.grprice as price,
+            IFNULL(SUM(od.shoppingnum), 0) as sales,
+            g.gname as name
+        FROM goodstable g
+        LEFT JOIN orderdetail od ON g.id = od.goodstable_id
+        GROUP BY g.id, g.grprice, g.gname
+        HAVING sales > 0
+    </select>
+
+</mapper>

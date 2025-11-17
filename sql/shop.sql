@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50740
 File Encoding         : 65001
 
-Date: 2025-11-16 22:24:21
+Date: 2025-11-17 14:47:25
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -93,7 +93,7 @@ CREATE TABLE `ausertable` (
 -- ----------------------------
 -- Records of ausertable
 -- ----------------------------
-INSERT INTO `ausertable` VALUES ('1', 'admin', '$2a$10$B0mMb0sbJcdlBomYuW3wNeMZ73ACtRkN0k3Fg5VgEgd4vBKCqt51q', 'admin@ebusiness.com', '系统管理员', null, '1', '2025-11-16 16:39:56', '2025-11-16 22:03:33');
+INSERT INTO `ausertable` VALUES ('1', 'admin', '$2a$10$B0mMb0sbJcdlBomYuW3wNeMZ73ACtRkN0k3Fg5VgEgd4vBKCqt51q', 'admin@ebusiness.com', '系统管理员', null, '1', '2025-11-16 16:39:56', '2025-11-17 14:43:41');
 INSERT INTO `ausertable` VALUES ('2', 'root', '$2a$10$4Oc0c3EvzujaFQTbfH/UGejLdLR07aXJLpenNKd6diR.Q6Dt5jqr.', '11@qq.com', '系统管理员2', '11111111111', '1', '2025-11-16 22:07:55', '2025-11-16 22:08:34');
 
 -- ----------------------------
@@ -104,6 +104,7 @@ CREATE TABLE `busertable` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `bemail` varchar(100) NOT NULL,
   `bpwd` varchar(100) NOT NULL,
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '注册时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `bemail` (`bemail`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
@@ -111,7 +112,7 @@ CREATE TABLE `busertable` (
 -- ----------------------------
 -- Records of busertable
 -- ----------------------------
-INSERT INTO `busertable` VALUES ('1', 'user@example.com', '$2a$10$TiFsNa7uu5Lap70.jikcB.ytUyRY2EuIvvImacXNP3XsI3f3u1YKy');
+INSERT INTO `busertable` VALUES ('1', 'user@example.com', '$2a$10$TiFsNa7uu5Lap70.jikcB.ytUyRY2EuIvvImacXNP3XsI3f3u1YKy', '2025-11-17 14:41:22');
 
 -- ----------------------------
 -- Table structure for carttable
@@ -127,11 +128,12 @@ CREATE TABLE `carttable` (
   KEY `goodstable_id` (`goodstable_id`),
   CONSTRAINT `carttable_ibfk_1` FOREIGN KEY (`busertable_id`) REFERENCES `busertable` (`id`),
   CONSTRAINT `carttable_ibfk_2` FOREIGN KEY (`goodstable_id`) REFERENCES `goodstable` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of carttable
 -- ----------------------------
+INSERT INTO `carttable` VALUES ('7', '1', '6', '1');
 
 -- ----------------------------
 -- Table structure for goodstable

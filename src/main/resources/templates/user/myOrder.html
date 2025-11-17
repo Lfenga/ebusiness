@@ -1,73 +1,118 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<base th:href="@{/}"><!-- 不用base就使用th:src="@{/js/jquery.min.js} -->
+<base th:href="@{/}">
 <meta charset="UTF-8">
-<title>订单页面</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>我的订单 - eBusiness</title>
 <link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/custom.css" />
 <script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
 <script type="text/javascript" th:inline="javascript">
 	function pay(){
-			$.ajax(
-				{
-					//请求路径，要注意的是url和th:inline="javascript"
-					url : [[@{/cart/pay}]],
-					//请求类型
-					type : "post",
-					contentType : "application/json",
-					//data表示发送的数据
-					data : JSON.stringify({
-						id : $("#oid").text()
-					}),
-					//成功响应的结果
-					success : function(obj){//obj响应数据
-						alert("支付成功");
-						//获取路径
-						var pathName=window.document.location.pathname;
-						//截取，得到项目名称
-						var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
-						window.location.href = projectName;
-					},
-			        error : function() {
-			            alert("处理异常！");
-			        }
-				}	
-			);
+		$.ajax({
+			url : [[@{/cart/pay}]],
+			type : "post",
+			contentType : "application/json",
+			data : JSON.stringify({
+				id : $("#oid").text()
+			}),
+			success : function(obj){
+				showAlert("支付成功！", "success");
+				setTimeout(function() {
+					var pathName=window.document.location.pathname;
+					var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
+					window.location.href = projectName;
+				}, 1500);
+			},
+	        error : function() {
+	            showAlert("处理异常，请稍后重试！", "warning");
+	        }
+		});
+	}
+	
+	function showAlert(message, type) {
+		var alertClass = type === 'warning' ? 'alert-warning' : 'alert-success';
+		var alertHtml = '<div class="alert alert-custom ' + alertClass + ' alert-dismissible" role="alert" style="position: fixed; top: 140px; left: 50%; transform: translateX(-50%); z-index: 10000; min-width: 300px;">' +
+			'<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>' +
+			'<strong>' + message + '</strong></div>';
+		$('body').append(alertHtml);
+		setTimeout(function() {
+			$('.alert').fadeOut(500, function() { $(this).remove(); });
+		}, 3000);
 	}
 </script>
 </head>
 <body>
 <div th:include="user/header"></div>
-<div class="container">
-	<div class="panel panel-primary">
+
+<div class="container" style="margin-top: 30px; margin-bottom: 60px;">
+	<!-- 面包屑导航 -->
+	<ol class="breadcrumb breadcrumb-custom">
+		<li><a href="/">首页</a></li>
+		<li class="active">我的订单</li>
+	</ol>
+	
+	<div class="panel-custom">
 		<div class="panel-heading">
-			<h3 class="panel-title">订单列表</h3>
+			<h3 class="panel-title">📦 我的订单</h3>
 		</div>
 		<div class="panel-body">
-			<div class="table table-responsive">
-				<table class="table table-bordered table-hover">
-					<tbody class="text-center">
+			<div class="table-responsive">
+				<table class="table table-custom">
+					<thead>
 						<tr>
-							<th>订单编号</th>
-							<th>订单金额</th>
-							<th>订单状态</th>
-							<th>下单时间</th>
-							<th>查看详情</th>
+							<th class="text-center">订单编号</th>
+							<th class="text-center">订单金额</th>
+							<th class="text-center">订单状态</th>
+							<th class="text-center">下单时间</th>
+							<th class="text-center">操作</th>
 						</tr>
+					</thead>
+					<tbody>
 						<tr th:each="order:${myOrder}">
-							<td th:text="${order.id}"></td>
-							<td th:text="${order.amount}"></td>
-							<td>
-								<span th:if="${order.status} == 0" >
-									未支付 &nbsp; <a href="javascript:pay()" >去支付</a>
-								</span>
-								<span th:if="${order.status} == 1" >
-									已支付
+							<td class="text-center" style="vertical-align: middle; font-weight: 600;">
+								<span id="oid" th:text="${order.id}"></span>
+							</td>
+							<td class="text-center" style="vertical-align: middle;">
+								<span style="color: #FF6B6B; font-weight: 700; font-size: 18px;">
+									¥<span th:text="${order.amount}"></span>
 								</span>
 							</td>
-							<td th:text="${order.orderdate}"></td>
-							<td>
-								<a th:href="'cart/orderDetail?id=' + ${order.id}" target="_blank">查看详情</a>
+							<td class="text-center" style="vertical-align: middle;">
+								<span th:if="${order.status} == 0" class="status-badge status-unpaid">
+									💰 待支付
+								</span>
+								<span th:if="${order.status} == 1" class="status-badge status-paid">
+									✅ 已支付
+								</span>
+							</td>
+							<td class="text-center" style="vertical-align: middle; color: #6C757D;">
+								<span th:text="${order.orderdate}"></span>
+							</td>
+							<td class="text-center" style="vertical-align: middle;">
+								<a th:href="'cart/orderDetail?id=' + ${order.id}" 
+								   class="btn btn-sm btn-custom-secondary" 
+								   target="_blank">
+									👁️ 查看详情
+								</a>
+								<button th:if="${order.status} == 0" 
+										onclick="pay()" 
+										class="btn btn-sm btn-custom-primary" 
+										style="margin-left: 5px;">
+									💳 去支付
+								</button>
+							</td>
+						</tr>
+						<!-- 空状态提示 -->
+						<tr th:if="${#lists.isEmpty(myOrder)}">
+							<td colspan="5">
+								<div class="empty-state">
+									<div class="empty-state-icon">📦</div>
+									<p class="empty-state-text">暂无订单记录</p>
+									<a href="/" class="btn btn-custom-primary">去购物</a>
+								</div>
 							</td>
 						</tr>
 					</tbody>

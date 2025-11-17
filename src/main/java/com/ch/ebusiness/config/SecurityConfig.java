@@ -69,7 +69,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/cart/**", "/user/exit").authenticated()
                 // 管理员URL不走Spring Security，使用session验证
                 .antMatchers("/admin/**", "/goods/**", "/type/**", "/selectOrder", "/selectUser", "/deleteUser",
-                        "/loginOut", "/adminLog/**")
+                        "/loginOut", "/adminLog/**", "/statistics/**")
                 .permitAll()
                 .anyRequest().authenticated()
                 .and()

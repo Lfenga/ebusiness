@@ -1,42 +1,98 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<base th:href="@{/}"><!-- 不用base就使用th:src="@{/js/jquery.min.js} -->
+<base th:href="@{/}">
 <meta charset="UTF-8">
-<title>订单详情页面</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>订单详情 - eBusiness</title>
 <link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/custom.css" />
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
 </head>
 <body>
-<div class="container">
-	<div class="panel panel-primary">
+<div th:include="user/header"></div>
+
+<div class="container" style="margin-top: 30px; margin-bottom: 60px;">
+	<!-- 面包屑导航 -->
+	<ol class="breadcrumb breadcrumb-custom">
+		<li><a href="/">首页</a></li>
+		<li><a href="cart/myOder">我的订单</a></li>
+		<li class="active">订单详情</li>
+	</ol>
+	
+	<div class="panel-custom">
 		<div class="panel-heading">
-			<h3 class="panel-title">订单详情</h3>
+			<h3 class="panel-title">📋 订单详情</h3>
 		</div>
 		<div class="panel-body">
-			<div class="table table-responsive">
-				<table class="table table-bordered table-hover">
-					<tbody class="text-center">
+			<div class="table-responsive">
+				<table class="table table-custom">
+					<thead>
 						<tr>
-							<th>商品编号</th>
-							<th>商品图片</th>
-							<th>商品名称</th>
-							<th>商品购买价</th>
-							<th>购买数量</th>
+							<th class="text-center">商品编号</th>
+							<th class="text-center">商品图片</th>
+							<th class="text-center">商品名称</th>
+							<th class="text-center">购买价格</th>
+							<th class="text-center">购买数量</th>
+							<th class="text-center">小计</th>
 						</tr>
+					</thead>
+					<tbody>
 						<tr th:each="od:${orderDetail}">
-							<td th:text="${od.id}"></td>
-							<td>
+							<td class="text-center" style="vertical-align: middle; font-weight: 600;">
+								<span th:text="${od.id}"></span>
+							</td>
+							<td class="text-center">
 								<a th:href="'goodsDetail?id=' + ${od.id}"> 
-								<img th:src="'images/' + ${od.gpicture}"
-									style="height: 50px; width: 50px; display: block;">
+									<img th:src="'images/' + ${od.gpicture}"
+										 class="table-img"
+										 alt="商品图片">
 								</a>
 							</td>
-							<td th:text="${od.gname}"></td>
-							<td th:text="${od.grprice}"></td>
-							<td th:text="${od.shoppingnum}"></td>
+							<td class="text-center" style="vertical-align: middle;">
+								<a th:href="'goodsDetail?id=' + ${od.id}" 
+								   style="color: #2C3E50; font-weight: 600; text-decoration: none;">
+									<span th:text="${od.gname}"></span>
+								</a>
+							</td>
+							<td class="text-center" style="vertical-align: middle;">
+								<span style="color: #FF6B6B; font-weight: 700; font-size: 16px;">
+									¥<span th:text="${od.grprice}"></span>
+								</span>
+							</td>
+							<td class="text-center" style="vertical-align: middle;">
+								<span class="badge-custom" style="background: #E9ECEF; color: #2C3E50; font-size: 14px;">
+									×<span th:text="${od.shoppingnum}"></span>
+								</span>
+							</td>
+							<td class="text-center" style="vertical-align: middle;">
+								<span style="color: #FF6B6B; font-weight: 700; font-size: 18px;">
+									¥<span th:text="${od.grprice * od.shoppingnum}"></span>
+								</span>
+							</td>
+						</tr>
+						<!-- 空状态 -->
+						<tr th:if="${#lists.isEmpty(orderDetail)}">
+							<td colspan="6">
+								<div class="empty-state">
+									<div class="empty-state-icon">📦</div>
+									<p class="empty-state-text">暂无订单详情</p>
+								</div>
+							</td>
 						</tr>
 					</tbody>
 				</table>
+			</div>
+			
+			<!-- 操作按钮 -->
+			<div style="margin-top: 30px; text-align: center;">
+				<a href="cart/myOder" class="btn btn-custom-secondary btn-lg">
+					← 返回订单列表
+				</a>
+				<a href="/" class="btn btn-custom-primary btn-lg" style="margin-left: 15px;">
+					继续购物
+				</a>
 			</div>
 		</div>
 	</div>

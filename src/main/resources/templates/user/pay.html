@@ -1,53 +1,113 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<base th:href="@{/}"><!-- 不用base就使用th:src="@{/js/jquery.min.js} -->
+<base th:href="@{/}">
 <meta charset="UTF-8">
-<title>支付页面</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>订单支付 - eBusiness</title>
 <link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/custom.css" />
 <script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
 <script type="text/javascript" th:inline="javascript">
 	function pay(){
-			$.ajax(
-				{
-					//请求路径，要注意的是url和th:inline="javascript"
-					url : [[@{/cart/pay}]],
-					//请求类型
-					type : "post",
-					contentType : "application/json",
-					//data表示发送的数据
-					data : JSON.stringify({
-						id : $("#oid").text()
-					}),
-					//成功响应的结果
-					success : function(obj){//obj响应数据
-						alert("支付成功");
-						//获取路径
-						var pathName=window.document.location.pathname;
-						//截取，得到项目名称
-						var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
-						window.location.href = projectName;
-					},
-			        error : function() {
-			            alert("处理异常！");
-			        }
-				}	
-			);
+		// 显示加载动画
+		$('#payBtn').prop('disabled', true).html('<span class="loading-spinner" style="width: 20px; height: 20px; border-width: 2px; display: inline-block; vertical-align: middle; margin-right: 8px;"></span>处理中...');
+		
+		$.ajax({
+			url : [[@{/cart/pay}]],
+			type : "post",
+			contentType : "application/json",
+			data : JSON.stringify({
+				id : $("#oid").text()
+			}),
+			success : function(obj){
+				showAlert("支付成功！正在跳转...", "success");
+				setTimeout(function() {
+					var pathName=window.document.location.pathname;
+					var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
+					window.location.href = projectName;
+				}, 1500);
+			},
+	        error : function() {
+				$('#payBtn').prop('disabled', false).html('💳 立即支付');
+	            showAlert("支付失败，请稍后重试！", "warning");
+	        }
+		});
+	}
+	
+	function showAlert(message, type) {
+		var alertClass = type === 'warning' ? 'alert-warning' : 'alert-success';
+		var alertHtml = '<div class="alert alert-custom ' + alertClass + ' alert-dismissible" role="alert" style="position: fixed; top: 140px; left: 50%; transform: translateX(-50%); z-index: 10000; min-width: 300px;">' +
+			'<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>' +
+			'<strong>' + message + '</strong></div>';
+		$('body').append(alertHtml);
+		setTimeout(function() {
+			$('.alert').fadeOut(500, function() { $(this).remove(); });
+		}, 3000);
 	}
 </script>
+<style>
+	body {
+		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		min-height: 100vh;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 20px;
+	}
+	.success-card {
+		background: white;
+		border-radius: 16px;
+		padding: 60px 40px;
+		box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+		max-width: 600px;
+		width: 100%;
+		text-align: center;
+	}
+	.success-icon {
+		font-size: 80px;
+		margin-bottom: 20px;
+		animation: bounce 1s ease;
+	}
+	@keyframes bounce {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-20px); }
+	}
+</style>
 </head>
 <body>
-<div class="container">
-	<div class="panel panel-primary">
-		<div class="panel-heading">
-			<h3 class="panel-title">订单提交成功</h3>
-		</div>
-		<div class="panel-body">
-			<div>
-				您的订单编号为<font color="red" size="5"> <span id="oid" th:text="${order.id}"></span></font>	。<br><br>
-				<a href="javascript:pay()">去支付</a>
-			</div>
-		</div>
+<div class="success-card">
+	<div class="success-icon">✅</div>
+	<h2 style="color: #2C3E50; font-weight: 700; margin-bottom: 20px;">订单提交成功！</h2>
+	<p style="color: #6C757D; font-size: 16px; margin-bottom: 30px;">
+		感谢您的购买，您的订单已成功提交
+	</p>
+	
+	<div style="background: linear-gradient(135deg, #FFF5F5 0%, #FFE5E5 100%); padding: 30px; border-radius: 12px; margin-bottom: 40px;">
+		<p style="color: #6C757D; font-size: 14px; margin-bottom: 10px;">订单编号</p>
+		<p style="color: #FF6B6B; font-size: 32px; font-weight: 700; margin: 0;">
+			<span id="oid" th:text="${order.id}"></span>
+		</p>
+	</div>
+	
+	<div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+		<button onclick="pay()" id="payBtn" class="btn btn-custom-primary btn-lg btn-icon">
+			<span style="font-size: 18px;">💳</span>
+			<span>立即支付</span>
+		</button>
+		<a href="cart/myOder" class="btn btn-custom-secondary btn-lg">
+			查看订单
+		</a>
+		<a href="/" class="btn btn-default btn-lg">
+			返回首页
+		</a>
+	</div>
+	
+	<div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #E9ECEF;">
+		<p style="color: #6C757D; font-size: 14px; margin: 0;">
+			💡 温馨提示：请尽快完成支付，超时订单将自动取消
+		</p>
 	</div>
 </div>
 </body>
