@@ -3,87 +3,92 @@
 <head>
 <base th:href="@{/}">
 <meta charset="UTF-8">
-<title>查询类型页面</title>
+<title>类型管理 - 电商管理系统</title>
 <link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/ruoyi-admin.css" />
 <script src="js/jquery.min.js"></script>
+<script src="js/common.js"></script>
 <script type="text/javascript" th:inline="javascript">
+	var deleteUrl = /*[[@{/type/deleteType}]]*/ '/type/deleteType';
 	function deleteType(tid){
-		$.ajax(
-			{
-				//请求路径，要注意的是url和th:inline="javascript"
-				url : [[@{/type/deleteType}]],
-				//请求类型
-				type : "post",
-				//data表示发送的数据
-				data : {
-					id : tid
-				},
-				//成功响应的结果
-				success : function(obj){//obj响应数据
-					if(obj == "no"){
-						alert("该类型下有商品不允许删除！");
-					}else{
-						if(window.confirm("真的删除该类型吗？")){
-							//获取路径
-							var pathName=window.document.location.pathname;
-							//截取，得到项目名称
-							var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
-							window.location.href = projectName + obj;
-						}
-					}
-				},
-		        error : function() {
-		            alert("处理异常！");
-		        }
-			}	
-		);
+		confirmDelete(tid, deleteUrl, '确定要删除该类型吗？');
 	}
-	</script>
+</script>
 </head>
 <body>
-	<!-- 加载header.html -->
-	<div th:include="admin/header"></div>
-	<br><br><br>
-	<div class="container">
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<h3 class="panel-title">商品类型列表</h3>
+	<div th:replace="admin/header::myheader"></div>
+	
+	<div class="main-content">
+		<div class="page-container">
+			<div class="page-header">
+				<h1 class="page-title">商品类型管理</h1>
 			</div>
-			<div class="panel-body">
-				<div class="table table-responsive">
-					<table class="table table-bordered table-hover">
-						<tbody class="text-center">
-							<tr>
-								<th>类型ID</th>
-								<th>类型名称</th>
-								<th>操作</th>
-							</tr>
-							<tr th:each="gty:${allTypes}">
-								<td th:text="${gty.id}"></td>
-								<td th:text="${gty.typename}"></td>
-								<td>
-									<a th:href="'javascript:deleteType(' + ${gty.id} + ')'">删除</a>
-								</td>
-							</tr>
-							<tr>
-								<td colspan="3" align="right">
-									<ul class="pagination">
-										<li><a>第<span th:text="${currentPage}" ></span>页</a></li>
-										<li><a>共<span th:text="${totalPage}" ></span>页</a></li>
-										<li>
-											<span th:if="${currentPage} != 1" >
-												<a th:href="'type/selectAllTypeByPage?currentPage=' + ${currentPage - 1}">上一页</a>
-											</span>
-											<span th:if="${currentPage} != ${totalPage}" >
-												<a th:href="'type/selectAllTypeByPage?currentPage=' + ${currentPage + 1}">下一页</a>
-											</span>
-										</li>
-									</ul>
-								</td>
-						</tr>
-						</tbody>
-					</table>
+			
+			<div class="action-buttons">
+				<div class="btn-group-left">
+					<a th:href="@{/type/toAddType}" class="btn-custom btn-primary">
+						➕ 添加类型
+					</a>
+					<button onclick="location.reload()" class="btn-custom btn-info">
+						🔄 刷新
+					</button>
 				</div>
+				<div>
+					<span style="color: #909399;">共 <strong th:text="${#lists.size(allTypes)}">0</strong> 条数据</span>
+				</div>
+			</div>
+			
+			<div class="table-wrapper">
+				<table class="custom-table">
+					<thead>
+						<tr>
+							<th class="text-center" width="30%">类型ID</th>
+							<th width="40%">类型名称</th>
+							<th class="text-center" width="30%">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${#lists.isEmpty(allTypes)}">
+							<td colspan="3" class="text-center">
+								<div class="empty-state">
+									<div class="empty-state-icon">📋</div>
+									<div class="empty-state-text">暂无类型数据</div>
+								</div>
+							</td>
+						</tr>
+						<tr th:each="gty:${allTypes}">
+							<td class="text-center" th:text="${gty.id}"></td>
+							<td th:text="${gty.typename}"></td>
+							<td class="text-center table-actions">
+								<button th:onclick="'deleteType(' + ${gty.id} + ')'" class="action-btn action-btn-delete">
+									🗑️ 删除
+								</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="pagination-container" th:if="${totalPage != null && totalPage > 0}">
+				<ul class="pagination">
+					<li th:class="${currentPage == 1 ? 'disabled' : ''}">
+						<a th:href="${currentPage > 1 ? '@{/type/selectAllTypeByPage(currentPage=' + (currentPage - 1) + ')}' : 'javascript:void(0)'}">
+							&laquo; 上一页
+						</a>
+					</li>
+					<li th:each="i : ${#numbers.sequence(1, totalPage)}" 
+					    th:class="${i == currentPage ? 'active' : ''}">
+						<a th:href="@{/type/selectAllTypeByPage(currentPage=${i})}" th:text="${i}">1</a>
+					</li>
+					<li th:class="${currentPage == totalPage ? 'disabled' : ''}">
+						<a th:href="${currentPage < totalPage ? '@{/type/selectAllTypeByPage(currentPage=' + (currentPage + 1) + ')}' : 'javascript:void(0)'}">
+							下一页 &raquo;
+						</a>
+					</li>
+					<li class="disabled">
+						<a>第 <span th:text="${currentPage}"></span> / <span th:text="${totalPage}"></span> 页</a>
+					</li>
+				</ul>
 			</div>
 		</div>
 	</div>

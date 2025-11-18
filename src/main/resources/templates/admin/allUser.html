@@ -3,9 +3,11 @@
 <head>
 <base th:href="@{/}">
 <meta charset="UTF-8">
-<title>主页</title>
+<title>用户列表 - 电商管理系统</title>
 <link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/ruoyi-admin.css" />
 <script src="js/jquery.min.js"></script>
+<script src="js/common.js"></script>
 <script type="text/javascript" th:inline="javascript">
 	function deleteUsers(tid){
 		$.ajax(
@@ -39,51 +41,64 @@
 		);
 	}
 	</script>
+	<script type="text/javascript" th:inline="javascript">
+	function deleteUsers(tid){
+		confirmDelete(tid, [[@{/deleteUser}]], '确定要删除该用户吗？此操作不可恢复！');
+	}
+	</script>
 </head>
 <body>
-	<!-- 加载header.html -->
-	<div th:include="admin/header"></div>
-	<br><br><br>
-	<div class="container">
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<h3 class="panel-title">商品列表</h3>
+	<div th:replace="admin/header::myheader"></div>
+	
+	<div class="main-content">
+		<div class="page-container">
+			<div class="page-header">
+				<h1 class="page-title">👥 用户列表</h1>
 			</div>
-			<div class="panel-body">
-				<div class="table table-responsive">
-					<table class="table table-bordered table-hover">
-						<tbody class="text-center">
-							<tr>
-								<th>用户ID</th>
-								<th>用户邮箱</th>
-								<th>删除</th>
-							</tr>
-							<tr th:each="u:${allUsers}">
-								<td th:text="${u.id}"></td>
-								<td th:text="${u.bemail}"></td>
-								<td>
-									<a th:href="'javascript:deleteUsers('+ ${u.id} +')'" >删除</a>
-								</td>
-							</tr>
-							<tr>
-								<td colspan="3" align="right">
-									<ul class="pagination">
-										<li><a>第<span th:text="${currentPage}" ></span>页</a></li>
-										<li><a>共<span th:text="${totalPage}" ></span>页</a></li>
-										<li>
-											<span th:if="${currentPage} != 1" >
-												<a th:href="@{selectUser?currentPage=${currentPage - 1}}">上一页</a>
-											</span>
-											<span th:if="${currentPage} != ${totalPage}" >
-												<a th:href="@{selectUser?currentPage=${currentPage - 1}}">下一页</a>
-											</span>
-										</li>
-									</ul>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+			
+			<div class="table-wrapper">
+				<table class="custom-table">
+					<thead>
+						<tr>
+							<th class="text-center">用户ID</th>
+							<th>用户邮箱</th>
+							<th class="text-center">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${#lists.isEmpty(allUsers)}">
+							<td colspan="3" class="text-center">
+								<div class="empty-state">
+									<div class="empty-state-icon">👥</div>
+									<div class="empty-state-text">暂无用户数据</div>
+								</div>
+							</td>
+						</tr>
+						<tr th:each="u:${allUsers}">
+							<td class="text-center" th:text="${u.id}"></td>
+							<td th:text="${u.bemail}"></td>
+							<td class="text-center table-actions">
+								<button class="action-btn action-btn-delete" 
+										th:onclick="'deleteUsers(' + ${u.id} + ')'">🗑️ 删除</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="pagination-container">
+				<ul class="pagination">
+					<li th:class="${currentPage == 1 ? 'disabled' : ''}">
+						<a th:href="@{selectUser(currentPage=${currentPage - 1})}">&laquo;</a>
+					</li>
+					<li th:each="i : ${#numbers.sequence(1, totalPage)}" 
+						th:class="${i == currentPage ? 'active' : ''}">
+						<a th:href="@{selectUser(currentPage=${i})}" th:text="${i}">1</a>
+					</li>
+					<li th:class="${currentPage == totalPage ? 'disabled' : ''}">
+						<a th:href="@{selectUser(currentPage=${currentPage + 1})}">&raquo;</a>
+					</li>
+				</ul>
 			</div>
 		</div>
 	</div>

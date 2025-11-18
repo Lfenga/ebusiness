@@ -2,50 +2,73 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>管理员登录页面</title>
-<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<title>管理员登录 - 电商管理系统</title>
+<base th:href="@{/}">
+<link rel="stylesheet" th:href="@{/css/ruoyi-admin.css}" />
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/common.js}"></script>
+</head>
 <body>
-	<div class="container">
-	  	<div class="bg-primary"  style="width:70%; height: 60px;padding-top: 1px;">
-	       <h3 align="center">管理员登录</h3>
-	   </div>
-		<br>
-		<br>
-		<form th:action="@{/admin/login}" name="myform" method="post" th:object="${aUser}"  class="form-horizontal" role="form" >
-			<div class="form-group has-success">
-				<label class="col-sm-2 col-md-2 control-label">用户名</label>
-				<div class="col-sm-4 col-md-4">
-					<input type="text" class="form-control"
-					 placeholder="请输入管理员名"
-					th:field="*{aname}"/>
-					<span th:errors="*{aname}"></span>
-				</div>
-			</div>
-		
-			<div class="form-group has-success">
-				  <label class="col-sm-2 col-md-2 control-label">密码</label>
-				  <div class="col-sm-4 col-md-4">
-		  				<input type="password" class="form-control"
-					 placeholder="请输入您的密码" th:field="*{apwd}"/>
-					 <span th:errors="*{apwd}"></span>
-				  </div>
-			 </div>
-			
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-					<button type="submit"class="btn btn-success" >登录</button>
-					<button type="reset" class="btn btn-primary" >重置</button>
-				</div>
+	<div class="login-container">
+		<div class="login-box">
+			<div class="login-header">
+				<div class="login-logo">🛒</div>
+				<h2 class="login-title">电商管理系统</h2>
+				<p class="login-subtitle">eBusiness Management System</p>
 			</div>
 			
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-					<font size="6" color="red">
-						<span th:text="${errorMessage }"></span>
-					</font>
+			<form th:action="@{/admin/login}" method="post" th:object="${aUser}" id="loginForm">
+				<div class="login-form-group">
+					<div class="login-input-wrapper">
+						<span class="login-input-icon">👤</span>
+						<input type="text" class="login-input" 
+							   placeholder="请输入用户名" 
+							   th:field="*{aname}"
+							   required="required"/>
+					</div>
+					<span class="login-error" th:if="${#fields.hasErrors('aname')}" th:errors="*{aname}"></span>
 				</div>
-			</div>
-		</form>
+				
+				<div class="login-form-group">
+					<div class="login-input-wrapper">
+						<span class="login-input-icon">🔒</span>
+						<input type="password" class="login-input" 
+							   placeholder="请输入密码" 
+							   th:field="*{apwd}"
+							   required="required"/>
+					</div>
+					<span class="login-error" th:if="${#fields.hasErrors('apwd')}" th:errors="*{apwd}"></span>
+				</div>
+				
+				<div class="login-form-group" style="margin-bottom: 10px;">
+					<button type="submit" class="login-btn">登 录</button>
+				</div>
+				
+				<div th:if="${errorMessage}" class="login-form-group">
+					<span class="login-error" style="display: block; text-align: center;" th:text="${errorMessage}"></span>
+				</div>
+			</form>
+		</div>
 	</div>
+	
+	<script>
+		// 表单验证增强
+		document.getElementById('loginForm').addEventListener('submit', function(e) {
+			const username = document.querySelector('input[name="aname"]').value.trim();
+			const password = document.querySelector('input[name="apwd"]').value.trim();
+			
+			if (!username) {
+				e.preventDefault();
+				showToast('请输入用户名', 'error');
+				return false;
+			}
+			
+			if (!password) {
+				e.preventDefault();
+				showToast('请输入密码', 'error');
+				return false;
+			}
+		});
+	</script>
 </body>
 </html>

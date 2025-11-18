@@ -2,89 +2,134 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
-<title>商品类型添加页面</title>
+<title>修改商品 - 电商管理系统</title>
 <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+<link rel="stylesheet" th:href="@{/css/ruoyi-admin.css}" />
+<script th:src="@{/js/jquery.min.js}"></script>
+<script th:src="@{/js/common.js}"></script>
+</head>
 <body>
-	<div th:include="admin/header"></div>
-	<br><br><br>
-	<div class="container">
-		<div class="bg-primary"  style="width:70%; height: 60px;padding-top: 0.5px;">
-	       <h3 align="center">修改商品</h3>
-	   </div><br>
-		<form th:action="@{/goods/updateGoods}"
-		 name="myform" method="post" 
-		 th:object="${goods}"  
-		 class="form-horizontal" 
-		 enctype="multipart/form-data" >
-			<div class="form-group has-success">
-				<label class="col-sm-2 col-md-2 control-label">商品名称</label>
-				<div class="col-sm-4 col-md-4">
-					<input type="text" class="form-control"
-					 placeholder="请输入商品名"
-					th:field="*{gname}"/>
-					<input type="hidden" name="id" id="id" th:value="${goods.id}"/>
-				</div>
-			</div>
-			<div class="form-group has-success">
-				<label class="col-sm-2 col-md-2 control-label">商品原价</label>
-				<div class="col-sm-4 col-md-4">
-					<input type="number" class="form-control"
-					 placeholder="请输入商品原价"
-					th:field="*{goprice}"/>
-				</div>
-			</div>
-			<div class="form-group has-success">
-				<label class="col-sm-2 col-md-2 control-label">商品折扣价</label>
-				<div class="col-sm-4 col-md-4">
-					<input type="number" class="form-control"
-					 placeholder="请输入商品折扣价"
-					th:field="*{grprice}"/>
-				</div>
-			</div>
-			<div class="form-group has-success">
-				<label class="col-sm-2 col-md-2 control-label">商品库存</label>
-				<div class="col-sm-4 col-md-4">
-					<input type="number" class="form-control" min="0"
-					 placeholder="请输入商品库存"
-					th:field="*{stock}"/>
-				</div>
-			</div>
-			<div class="form-group has-success">
-				  <label class="col-sm-2 col-md-2 control-label">商品图片</label>
-				  <div class="col-sm-4 col-md-4">
-		  				<input type="file" placeholder="请选择商品图片"  class="form-control" name="fileName"/>
-		  				<img th:src="'images/' + ${goods.gpicture}"
-									style="height: 50px; width: 50px; display: block;">
-						<input type="hidden" name="gpicture" id="gpicture" th:value="${goods.gpicture}"/>
-				  </div>
-			 </div>
-			<div class="form-group has-success">
-				<label class="col-sm-2 col-md-2 control-label">商品状态</label>
-				<div class="col-sm-4 col-md-4 radio">
-					<label> 
-						<input type="radio" th:field="*{status}" value="1">上架
-					</label>
-					<label> 
-						<input type="radio" th:field="*{status}" value="0">下架
-					</label>
-				</div>
-			</div>
-			<div class="form-group has-success">
-				<label class="col-sm-2 col-md-2 control-label">商品类型</label>
-				<div class="col-sm-4 col-md-4">
-					<select class="form-control" th:field="*{goodstype_id}">
-                        <option th:each="gty:${goodsType}" th:value="${gty.id}" th:text="${gty.typename}">
-					</select>
-				</div>
+	<div th:replace="admin/header::myheader"></div>
+	
+	<div class="main-content">
+		<div class="page-container">
+			<div class="page-header">
+				<h1 class="page-title">修改商品</h1>
 			</div>
 			
-			<div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-					<button type="submit"class="btn btn-success" >修改</button>
-					<button type="reset" class="btn btn-primary" >重置</button>
+			<div class="card">
+				<div class="card-body">
+					<form th:action="@{/goods/updateGoods}" method="post" 
+						  th:object="${goods}" enctype="multipart/form-data" 
+						  style="max-width: 700px; margin: 0 auto;" onsubmit="return validateUpdateForm()">
+						  
+						<input type="hidden" name="id" th:value="${goods.id}"/>
+						<input type="hidden" name="gpicture" th:value="${goods.gpicture}"/>
+						  
+						<div class="form-group">
+							<label class="form-label"><span style="color: #f56c6c;">* </span>商品名称</label>
+							<input type="text" class="form-control" th:field="*{gname}"
+								   placeholder="请输入商品名称" required="required"/>
+						</div>
+						
+						<div class="form-group">
+							<label class="form-label"><span style="color: #f56c6c;">* </span>商品原价</label>
+							<div style="position: relative;">
+								<input type="number" class="form-control" th:field="*{goprice}" 
+									   placeholder="0.00" step="0.01" min="0" required="required"
+									   style="padding-right: 35px;"/>
+								<span style="position: absolute; right: 12px; top: 8px; color: #909399;">元</span>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="form-label"><span style="color: #f56c6c;">* </span>商品折扣价</label>
+							<div style="position: relative;">
+								<input type="number" class="form-control" th:field="*{grprice}"
+									   placeholder="0.00" step="0.01" min="0" required="required"
+									   style="padding-right: 35px;"/>
+								<span style="position: absolute; right: 12px; top: 8px; color: #909399;">元</span>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="form-label"><span style="color: #f56c6c;">* </span>商品库存</label>
+							<input type="number" class="form-control" th:field="*{stock}"
+								   placeholder="请输入库存数量" min="0" required="required"/>
+						</div>
+						
+						<div class="form-group">
+							<label class="form-label">商品图片</label>
+							<div class="file-upload-wrapper">
+								<input type="file" id="fileName" name="fileName" class="file-upload-input" 
+									   accept="image/jpeg,image/png,image/jpg" onchange="handleUpdateFilePreview(this)"/>
+								<label for="fileName" class="file-upload-label">
+									<span class="file-upload-text">更换图片</span>
+								</label>
+							</div>
+							<div style="margin-top: 10px;">
+								<img th:src="@{'/images/' + ${goods.gpicture}}" id="previewImg"
+									 style="max-width: 200px; max-height: 200px; border-radius: 4px; border: 1px solid #dcdfe6;"/>
+							</div>
+							<small class="form-text text-muted">当前图片：<span th:text="${goods.gpicture}"></span>。如不更换请保持默认</small>
+						</div>
+						
+						<div class="form-group">
+							<label class="form-label">商品状态</label>
+							<div style="padding-top: 8px;">
+								<label style="margin-right: 20px; cursor: pointer; font-weight: normal;">
+									<input type="radio" th:field="*{status}" value="1" style="margin-right: 5px;"/>
+									<span style="color: #67c23a;">上架</span>
+								</label>
+								<label style="cursor: pointer; font-weight: normal;">
+									<input type="radio" th:field="*{status}" value="0" style="margin-right: 5px;"/>
+									<span style="color: #909399;">下架</span>
+								</label>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="form-label"><span style="color: #f56c6c;">* </span>商品类型</label>
+							<select class="form-control" th:field="*{goodstype_id}" required="required">
+								<option th:each="gty:${goodsType}" th:value="${gty.id}" th:text="${gty.typename}"></option>
+							</select>
+						</div>
+						
+						<div class="form-group" style="margin-top: 30px; text-align: center;">
+							<button type="submit" class="btn-custom btn-primary" style="width: 120px; margin-right: 10px;">保存修改</button>
+							<a th:href="@{/goods/selectGoods?currentPage=1}" class="btn-custom btn-info" style="width: 120px; text-decoration: none; display: inline-block; line-height: 32px;">返回列表</a>
+						</div>
+					</form>
+					
+					<script>
+					function validateUpdateForm() {
+						var goprice = parseFloat(document.querySelector('input[name="goprice"]').value);
+						var grprice = parseFloat(document.querySelector('input[name="grprice"]').value);
+						
+						if (grprice > goprice) {
+							showToast('折扣价不能大于原价', 'error');
+							return false;
+						}
+						
+						showLoading();
+						return true;
+					}
+					
+					// 专门用于修改页面的图片预览函数
+					function handleUpdateFilePreview(input) {
+						if (input.files && input.files[0]) {
+							var reader = new FileReader();
+							reader.onload = function(e) {
+								var previewImg = document.getElementById('previewImg');
+								previewImg.src = e.target.result;
+							};
+							reader.readAsDataURL(input.files[0]);
+						}
+					}
+					</script>
 				</div>
 			</div>
-		</form>
+		</div>
 	</div>
 </body>
 </html>

@@ -3,55 +3,68 @@
 <head>
 <base th:href="@{/}">
 <meta charset="UTF-8">
-<title>主页</title>
+<title>订单列表 - 电商管理系统</title>
 <link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/ruoyi-admin.css" />
+<script src="js/jquery.min.js"></script>
+<script src="js/common.js"></script>
 </head>
 <body>
-	<!-- 加载header.html -->
-	<div th:include="admin/header"></div>
-	<br><br><br>
-	<div class="container">
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<h3 class="panel-title">订单列表</h3>
+	<div th:replace="admin/header::myheader"></div>
+	
+	<div class="main-content">
+		<div class="page-container">
+			<div class="page-header">
+				<h1 class="page-title">📦 订单列表</h1>
 			</div>
-			<div class="panel-body">
-				<div class="table table-responsive">
-					<table class="table table-bordered table-hover">
-						<tbody class="text-center">
-							<tr>
-								<th>订单ID</th>
-								<th>用户邮箱</th>
-								<th>订单金额</th>
-								<th>订单状态</th>
-								<th>下单日期</th>
-							</tr>
-							<tr th:each="ao:${allOrders}">
-								<td th:text="${ao.id}"></td>
-								<td th:text="${ao.bemail}"></td>
-								<td th:text="${ao.amount}"></td>
-								<td th:text="(${ao.status} == 1)?'已支付':'未支付'"></td>
-								<td th:text="${ao.orderdate}"></td>
-							</tr>
-							<tr>
-								<td colspan="5" align="right">
-									<ul class="pagination">
-										<li><a>第<span th:text="${currentPage}" ></span>页</a></li>
-										<li><a>共<span th:text="${totalPage}" ></span>页</a></li>
-										<li>
-											<span th:if="${currentPage} != 1" >
-												<a th:href="@{selectOrder?currentPage=${currentPage - 1}}">上一页</a>
-											</span>
-											<span th:if="${currentPage} != ${totalPage}" >
-												<a th:href="@{selectOrder?currentPage=${currentPage - 1}}">下一页</a>
-											</span>
-										</li>
-									</ul>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+			
+			<div class="table-wrapper">
+				<table class="custom-table">
+					<thead>
+						<tr>
+							<th class="text-center">订单ID</th>
+							<th>用户邮箱</th>
+							<th class="text-center">订单金额</th>
+							<th class="text-center">订单状态</th>
+							<th class="text-center">下单日期</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${#lists.isEmpty(allOrders)}">
+							<td colspan="5" class="text-center">
+								<div class="empty-state">
+									<div class="empty-state-icon">📦</div>
+									<div class="empty-state-text">暂无订单数据</div>
+								</div>
+							</td>
+						</tr>
+						<tr th:each="ao:${allOrders}">
+							<td class="text-center" th:text="${ao.id}"></td>
+							<td th:text="${ao.bemail}"></td>
+							<td class="text-center" style="color: #e6a23c; font-weight: bold;">¥<span th:text="${ao.amount}"></span></td>
+							<td class="text-center">
+								<span th:class="${ao.status == 1 ? 'status-badge status-badge-success' : 'status-badge status-badge-warning'}" 
+									  th:text="${ao.status == 1 ? '已支付' : '未支付'}"></span>
+							</td>
+							<td class="text-center" th:text="${ao.orderdate}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="pagination-container">
+				<ul class="pagination">
+					<li th:class="${currentPage == 1 ? 'disabled' : ''}">
+						<a th:href="@{selectOrder(currentPage=${currentPage - 1})}">&laquo;</a>
+					</li>
+					<li th:each="i : ${#numbers.sequence(1, totalPage)}" 
+						th:class="${i == currentPage ? 'active' : ''}">
+						<a th:href="@{selectOrder(currentPage=${i})}" th:text="${i}">1</a>
+					</li>
+					<li th:class="${currentPage == totalPage ? 'disabled' : ''}">
+						<a th:href="@{selectOrder(currentPage=${currentPage + 1})}">&raquo;</a>
+					</li>
+				</ul>
 			</div>
 		</div>
 	</div>

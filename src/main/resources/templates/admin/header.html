@@ -3,47 +3,177 @@
 <head>
 <meta charset="UTF-8">
 <title>导航页</title>
-<base th:href="@{/}"><!-- 不用base就使用th:src="@{/js/jquery.min.js} -->
+<base th:href="@{/}">
 <!-- Bootstrap -->
 <link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/ruoyi-admin.css" rel="stylesheet">
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/common.js"></script>
 </head>
 <body>
-	<div class="container-fruid" th:fragment="myheader">
-		<div class="navbar navbar-default navbar-fixed-top" role="navigation"
-			style="padding-left: 30px;">
-			<ul class="nav navbar-nav">
-				<li><a th:href="@{/statistics/dashboard}">📊 数据统计</a></li>
-				<li class="dropdown"><a href="##" data-toggle="dropdown"
-					class="dropdown-toggle">类型管理<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a th:href="@{/type/selectAllTypeByPage?currentPage=1}">查询类型</a></li>
-						<li><a th:href="@{/type/toAddType}">添加类型</a></li>
+	<!-- 若依风格布局 -->
+	<div th:fragment="myheader">
+		<!-- 左侧侧边栏 -->
+		<div class="sidebar">
+			<div class="sidebar-logo">
+				<div class="logo-icon">EB</div>
+				<h1>电商管理系统</h1>
+			</div>
+			
+			<div class="sidebar-user">
+				<div class="sidebar-user-avatar">A</div>
+				<div class="sidebar-user-name">管理员</div>
+				<div class="sidebar-user-status">● 在线</div>
+			</div>
+			
+			<ul class="sidebar-menu">
+				<li class="sidebar-menu-item">
+					<a th:href="@{/statistics/dashboard}" class="sidebar-menu-link">
+						<span class="sidebar-menu-icon">📊</span>
+						<span class="sidebar-menu-text">数据统计</span>
+					</a>
+				</li>
+				
+				<li class="sidebar-menu-item">
+					<a href="javascript:void(0)" class="sidebar-menu-link">
+						<span class="sidebar-menu-icon">📦</span>
+						<span class="sidebar-menu-text">商品管理</span>
+						<span class="sidebar-menu-arrow">▶</span>
+					</a>
+					<ul class="sidebar-submenu">
+						<li><a th:href="@{/goods/selectAllGoodsByPage?currentPage=1&act=select}" class="sidebar-submenu-link">查询商品</a></li>
+						<li><a th:href="@{/goods/toAddGoods}" class="sidebar-submenu-link">添加商品</a></li>
+						<li><a th:href="@{/goods/selectAllGoodsByPage?currentPage=1&act=updateSelect}" class="sidebar-submenu-link">修改商品</a></li>
+						<li><a th:href="@{/goods/selectAllGoodsByPage?currentPage=1&act=deleteSelect}" class="sidebar-submenu-link">删除商品</a></li>
 					</ul>
 				</li>
-				<li class="dropdown"><a href="##" data-toggle="dropdown"
-					class="dropdown-toggle">商品管理<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a th:href="@{/goods/selectAllGoodsByPage?currentPage=1&act=select}">查询商品</a></li>
-						<li><a th:href="@{/goods/toAddGoods}">添加商品</a></li>
-						<li><a th:href="@{/goods/selectAllGoodsByPage?currentPage=1&act=updateSelect}">修改商品</a></li>
-						<li><a th:href="@{/goods/selectAllGoodsByPage?currentPage=1&act=deleteSelect}">删除商品</a></li>
+				
+				<li class="sidebar-menu-item">
+					<a href="javascript:void(0)" class="sidebar-menu-link">
+						<span class="sidebar-menu-icon">🏷️</span>
+						<span class="sidebar-menu-text">类型管理</span>
+						<span class="sidebar-menu-arrow">▶</span>
+					</a>
+					<ul class="sidebar-submenu">
+						<li><a th:href="@{/type/selectAllTypeByPage?currentPage=1}" class="sidebar-submenu-link">查询类型</a></li>
+						<li><a th:href="@{/type/toAddType}" class="sidebar-submenu-link">添加类型</a></li>
 					</ul>
 				</li>
-				<li><a th:href="@{/selectOrder?currentPage=1}">查询订单</a></li>
-				<li><a th:href="@{/selectUser?currentPage=1}">用户管理</a></li>
-				<li class="dropdown"><a href="##" data-toggle="dropdown"
-					class="dropdown-toggle">管理员<span class="caret"></span></a>
-					<ul class="dropdown-menu">
-						<li><a th:href="@{/admin/info}">个人信息</a></li>
-						<li><a th:href="@{/admin/selectAllAdmins?currentPage=1}">管理员管理</a></li>
+				
+				<li class="sidebar-menu-item">
+					<a th:href="@{/selectOrder?currentPage=1}" class="sidebar-menu-link">
+						<span class="sidebar-menu-icon">📋</span>
+						<span class="sidebar-menu-text">订单管理</span>
+					</a>
+				</li>
+				
+				<li class="sidebar-menu-item">
+					<a th:href="@{/selectUser?currentPage=1}" class="sidebar-menu-link">
+						<span class="sidebar-menu-icon">👥</span>
+						<span class="sidebar-menu-text">用户管理</span>
+					</a>
+				</li>
+				
+				<li class="sidebar-menu-item">
+					<a href="javascript:void(0)" class="sidebar-menu-link">
+						<span class="sidebar-menu-icon">⚙️</span>
+						<span class="sidebar-menu-text">系统管理</span>
+						<span class="sidebar-menu-arrow">▶</span>
+					</a>
+					<ul class="sidebar-submenu">
+						<li><a th:href="@{/admin/info}" class="sidebar-submenu-link">个人信息</a></li>
+						<li><a th:href="@{/admin/selectAllAdmins?currentPage=1}" class="sidebar-submenu-link">管理员管理</a></li>
+						<li><a th:href="@{/adminLog/selectLogs?currentPage=1}" class="sidebar-submenu-link">操作日志</a></li>
 					</ul>
 				</li>
-				<li><a th:href="@{/adminLog/selectLogs?currentPage=1}">操作日志</a></li>
-				<li><a th:href="@{/loginOut}">安全退出</a></li>
+				
+				<li class="sidebar-menu-item">
+					<a th:href="@{/loginOut}" class="sidebar-menu-link">
+						<span class="sidebar-menu-icon">🚪</span>
+						<span class="sidebar-menu-text">安全退出</span>
+					</a>
+				</li>
 			</ul>
 		</div>
+		
+		<!-- 顶部导航栏 -->
+		<div class="topbar">
+			<div class="breadcrumb-container">
+				<ol class="breadcrumb">
+					<li><a href="#">首页</a></li>
+					<li class="active">当前页面</li>
+				</ol>
+			</div>
+			
+			<div class="topbar-actions">
+				<span class="topbar-action-item" title="刷新" onclick="location.reload()">🔄</span>
+				<span class="topbar-action-item" title="帮助">❓</span>
+				<div class="topbar-user">
+					<div class="topbar-user-avatar">👤</div>
+					<span class="topbar-user-name">管理员</span>
+				</div>
+			</div>
+		</div>
 	</div>
+	
+	<script>
+	// 确保DOM加载完成后初始化菜单
+	$(document).ready(function() {
+		// 初始化侧边栏菜单交互
+		initSidebarMenu();
+	});
+	
+	// 如果common.js中的initSidebarMenu函数不存在，则在此定义
+	function initSidebarMenu() {
+		// 处理带有子菜单的菜单项点击事件
+		$('.sidebar-menu-item').each(function() {
+			var $this = $(this);
+			var $link = $this.find('> .sidebar-menu-link');
+			var $submenu = $this.find('.sidebar-submenu');
+			var $arrow = $link.find('.sidebar-menu-arrow');
+			
+			// 如果有子菜单
+			if ($submenu.length > 0) {
+				$link.on('click', function(e) {
+					e.preventDefault();
+					
+					// 切换展开/收起状态
+					if ($this.hasClass('open')) {
+						$this.removeClass('open');
+						$submenu.slideUp(200);
+						$arrow.text('▶');
+					} else {
+						// 关闭其他已展开的菜单
+						$('.sidebar-menu-item.open').removeClass('open').find('.sidebar-submenu').slideUp(200);
+						$('.sidebar-menu-arrow').text('▶');
+						
+						// 展开当前菜单
+						$this.addClass('open');
+						$submenu.slideDown(200);
+						$arrow.text('▼');
+					}
+				});
+			}
+		});
+		
+		// 高亮当前页面对应的菜单项
+		var currentUrl = window.location.pathname;
+		$('.sidebar-submenu-link, .sidebar-menu-link').each(function() {
+			var $link = $(this);
+			var href = $link.attr('href');
+			if (href && href !== 'javascript:void(0)' && currentUrl.indexOf(href.split('?')[0]) >= 0) {
+				$link.addClass('active');
+				// 如果是子菜单，展开父菜单
+				var $parentItem = $link.closest('.sidebar-menu-item');
+				if ($parentItem.find('.sidebar-submenu').length > 0) {
+					$parentItem.addClass('open');
+					$parentItem.find('.sidebar-submenu').show();
+					$parentItem.find('.sidebar-menu-arrow').text('▼');
+				}
+			}
+		});
+	}
+	</script>
 </body>
 </html>

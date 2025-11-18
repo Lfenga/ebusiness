@@ -3,54 +3,59 @@
 <head>
 <base th:href="@{/}">
 <meta charset="UTF-8">
-<title>商品详情页</title>
+<title>商品详情 - 电商管理系统</title>
 <link rel="stylesheet" href="css/bootstrap.min.css" />
+<link rel="stylesheet" href="css/ruoyi-admin.css" />
 </head>
 <body>
-	<!-- 加载header.html -->
-	<div th:include="admin/header"></div>
-	<br><br><br>
-	<div class="container">
-		<div class="panel panel-primary">
-			<div class="panel-heading">
-				<h3 class="panel-title">商品详情</h3>
-			</div>
-			<div class="panel-body">
-				<div class="table table-responsive">
-					<table class="table table-bordered table-hover">
-						<tbody class="text-center">
-							<tr>
-								<th>商品名称</th>
-								<td th:text="${goods.gname}"></td>
-							</tr>
-							<tr>
-								<th>商品原价</th>
-								<td th:text="${goods.goprice}"></td>
-							</tr>
-							<tr>
-								<th>商品折扣价</th>
-								<td th:text="${goods.grprice}"></td>
-							</tr>
-							<tr>
-								<th>商品库存</th>
-								<td th:text="${goods.stock}"></td>
-							</tr>
-							<tr>
-								<th>商品状态</th>
-								<td th:text="${goods.status == 1 ? '上架' : '下架'}"></td>
-							</tr>
-							<tr>
-								<th>商品图片</th>
-								<td>
-									<img th:src="'images/' + ${goods.gpicture}"
-									style="height: 50px; width: 50px; display: block;">
-								</td>
-							</tr>
-						</tbody>
-					</table>
+	<div th:replace="admin/header::myheader"></div>
+	
+	<div class="main-content">
+		<div class="page-container">
+			<div class="detail-card">
+				<div class="detail-header">
+					<h3>商品详细信息</h3>
+				</div>
+				<div class="detail-body">
+					<div class="detail-row">
+						<div class="detail-label">商品名称：</div>
+						<div class="detail-value" th:text="${goods.gname}"></div>
+					</div>
+					<div class="detail-row">
+						<div class="detail-label">商品原价：</div>
+						<div class="detail-value">¥<span th:text="${goods.goprice}"></span></div>
+					</div>
+					<div class="detail-row">
+						<div class="detail-label">商品折扣价：</div>
+						<div class="detail-value">¥<span th:text="${goods.grprice}"></span></div>
+					</div>
+					<div class="detail-row">
+						<div class="detail-label">商品库存：</div>
+						<div class="detail-value" th:text="${goods.stock}"></div>
+					</div>
+					<div class="detail-row">
+						<div class="detail-label">商品状态：</div>
+						<div class="detail-value">
+							<span th:class="${goods.status == 1 ? 'status-badge status-badge-success' : 'status-badge status-badge-danger'}" 
+								  th:text="${goods.status == 1 ? '上架' : '下架'}"></span>
+						</div>
+					</div>
+					<div class="detail-row">
+						<div class="detail-label">商品图片：</div>
+						<div class="detail-value">
+							<img th:src="'images/' + ${goods.gpicture}" class="image-preview preview-enabled"
+								 style="width: 120px; height: 120px; object-fit: cover;">
+						</div>
+					</div>
+				</div>
+				<div class="detail-actions">
+					<button onclick="history.back()" class="btn-custom btn-primary">← 返回</button>
+					<a th:href="@{/goods/detail(id=${goods.id},act=update)}" class="btn-custom btn-warning">✏️ 编辑</a>
 				</div>
 			</div>
 		</div>
 	</div>
+<script src="js/jquery.min.js"></script>
+<script src="js/common.js"></script>
 </body>
 </html>

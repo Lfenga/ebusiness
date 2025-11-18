@@ -2,67 +2,72 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8"/>
-<title>管理员个人信息</title>
+<title>个人信息 - 电商管理系统</title>
 <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+<link th:href="@{/css/ruoyi-admin.css}" rel="stylesheet"/>
 <script th:src="@{/js/jquery.min.js}"></script>
 <script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/common.js}"></script>
 </head>
 <body>
 <div th:replace="admin/header::myheader"></div>
-<div class="container" style="margin-top: 70px;">
-	<div class="panel panel-primary">
-		<div class="panel-heading">
-			<h3 class="panel-title">管理员个人信息</h3>
-		</div>
-		<div class="panel-body">
-			<div class="row">
-				<div class="col-md-8 col-md-offset-2">
-					<table class="table table-bordered">
-						<tbody>
-							<tr>
-								<th width="30%" class="active">管理员ID</th>
-								<td th:text="${admin.id}">1</td>
-							</tr>
-							<tr>
-								<th class="active">用户名</th>
-								<td th:text="${admin.aname}">admin</td>
-							</tr>
-							<tr>
-								<th class="active">真实姓名</th>
-								<td th:text="${admin.arealname != null ? admin.arealname : '未设置'}">管理员</td>
-							</tr>
-							<tr>
-								<th class="active">邮箱</th>
-								<td th:text="${admin.aemail != null ? admin.aemail : '未设置'}">admin@ebusiness.com</td>
-							</tr>
-							<tr>
-								<th class="active">手机号</th>
-								<td th:text="${admin.aphone != null ? admin.aphone : '未设置'}">13800138000</td>
-							</tr>
-							<tr>
-								<th class="active">账号状态</th>
-								<td>
-									<span class="label label-success" th:if="${admin.astatus == 1}">启用</span>
-									<span class="label label-danger" th:if="${admin.astatus == 0}">禁用</span>
-								</td>
-							</tr>
-							<tr>
-								<th class="active">创建时间</th>
-								<td th:text="${admin.createTime != null ? #dates.format(admin.createTime, 'yyyy-MM-dd HH:mm:ss') : '未知'}">2024-01-01 12:00:00</td>
-							</tr>
-							<tr>
-								<th class="active">上次登录时间</th>
-								<td th:text="${admin.lastLoginTime != null ? #dates.format(admin.lastLoginTime, 'yyyy-MM-dd HH:mm:ss') : '首次登录'}">2024-01-01 12:00:00</td>
-							</tr>
-						</tbody>
-					</table>
-					<div class="text-center" style="margin-top: 20px;">
-						<a th:href="@{/goods/selectAllGoodsByPage?currentPage=1&act=select}" class="btn btn-primary">返回首页</a>
+<div class="main-content">
+	<div class="page-container">
+		<div class="detail-card" style="max-width: 800px; margin: 0 auto;">
+			<div class="detail-header">
+				<h3>👤管理员个人信息</h3>
+			</div>
+			<div class="detail-body">
+				<div class="detail-row">
+					<div class="detail-label">管理员ID：</div>
+					<div class="detail-value" th:text="${admin.id}">1</div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">用户名：</div>
+					<div class="detail-value" th:text="${admin.aname}">admin</div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">真实姓名：</div>
+					<div class="detail-value" th:text="${admin.arealname != null ? admin.arealname : '未设置'}"></div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">邮箱：</div>
+					<div class="detail-value" th:text="${admin.aemail != null ? admin.aemail : '未设置'}"></div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">手机号：</div>
+					<div class="detail-value" th:text="${admin.aphone != null ? admin.aphone : '未设置'}"></div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">账号状态：</div>
+					<div class="detail-value">
+						<span th:class="${admin.astatus == 1 ? 'status-badge status-badge-success' : 'status-badge status-badge-danger'}" 
+							  th:text="${admin.astatus == 1 ? '启用' : '禁用'}"></span>
 					</div>
 				</div>
+				<div class="detail-row">
+					<div class="detail-label">创建时间：</div>
+					<div class="detail-value" th:text="${admin.createTime != null ? #dates.format(admin.createTime, 'yyyy-MM-dd HH:mm:ss') : '未知'}"></div>
+				</div>
+				<div class="detail-row">
+					<div class="detail-label">上次登录：</div>
+					<div class="detail-value" th:text="${admin.lastLoginTime != null ? #dates.format(admin.lastLoginTime, 'yyyy-MM-dd HH:mm:ss') : '首次登录'}"></div>
+				</div>
+			</div>
+			<div class="detail-actions">
+				<a th:href="@{/goods/selectAllGoodsByPage?currentPage=1&act=select}" class="btn-custom btn-primary">← 返回首页</a>
 			</div>
 		</div>
 	</div>
 </div>
+
+<script>
+$(document).ready(function() {
+	// 初始化侧边栏菜单
+	if (typeof initSidebarMenu === 'function') {
+		initSidebarMenu();
+	}
+});
+</script>
 </body>
 </html>

@@ -5,9 +5,11 @@
     <title>数据统计仪表盘 - 电商管理系统</title>
     <base th:href="@{/}">
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/ruoyi-admin.css" rel="stylesheet">
     <link href="css/custom.css" rel="stylesheet">
     <script src="js/jquery.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    <script src="js/common.js"></script>
     <!-- 引入 ECharts -->
     <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
     <style>
@@ -96,7 +98,8 @@
     <!-- 导航栏 -->
     <div th:replace="admin/header::myheader"></div>
     
-    <div class="container-fluid" style="margin-top: 80px; padding: 20px;">
+    <div class="main-content">
+        <div class="page-container" style="max-width: none;">
         <!-- 标题 -->
         <div class="dashboard-header">
             <h1 style="margin: 0;">📊 数据统计仪表盘</h1>
@@ -255,6 +258,7 @@
                     <div id="priceVsSalesChart" class="chart chart-small"></div>
                 </div>
             </div>
+        </div>
         </div>
     </div>
     
