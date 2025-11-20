@@ -23,19 +23,27 @@
 				//成功响应的结果
 				success : function(obj){//obj响应数据
 					if(obj == "no"){
-						alert("该用户有关联不允许删除！");
+						showAlert("该用户有关联不允许删除！", "warning");
 					}else{
-						if(window.confirm("真的删除该用户吗？")){
-							//获取路径
-							var pathName=window.document.location.pathname;
-							//截取，得到项目名称
-							var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
-							window.location.href = projectName + obj;
-						}
+						showConfirm({
+							title: '删除确认',
+							message: '真的删除该用户吗？',
+							type: 'danger',
+							confirmText: '删除',
+							cancelText: '取消'
+						}).then(confirmed => {
+							if (confirmed) {
+								//获取路径
+								var pathName=window.document.location.pathname;
+								//截取，得到项目名称
+								var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
+								window.location.href = projectName + obj;
+							}
+						});
 					}
 				},
 		        error : function() {
-		            alert("处理异常！");
+		            showAlert("处理异常！", "error");
 		        }
 			}	
 		);

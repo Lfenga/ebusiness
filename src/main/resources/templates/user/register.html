@@ -4,9 +4,7 @@
 <base th:href="@{/}">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>用户注册 - eBusiness</title>
-<link rel="stylesheet" href="css/bootstrap.min.css" />
-<link rel="stylesheet" href="css/custom.css" />
+<title>用户注册 - eBusiness购物平台</title>
 <script src="js/jquery.min.js"></script>
 <script src="js/common.js"></script>
 <script type="text/javascript" th:inline="javascript">
@@ -44,90 +42,255 @@
 	}
 
 	function showAlert(message, type) {
-		var alertClass = type === 'warning' ? 'alert-warning' : 'alert-success';
-		var alertHtml = '<div class="alert alert-custom ' + alertClass + ' alert-dismissible" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; min-width: 300px;">' +
-			'<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>' +
-			'<strong>' + message + '</strong></div>';
-		$('body').append(alertHtml);
-		setTimeout(function() {
-			$('.alert').fadeOut(500, function() { $(this).remove(); });
-		}, 3000);
+		// 使用全局的showAlert函数（已在common.js中定义）
+		window.showAlert(message, type);
+	}
+	
+	function checkNull(value, message) {
+		if (!value || value.trim() === '') {
+			showAlert(message, "warning");
+			return false;
+		}
+		return true;
 	}
 </script>
 <style>
-	body {
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		min-height: 100vh;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 20px;
-	}
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background: url('imgs/背景.png') no-repeat center center fixed;
+        background-size: 99% 97%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* 向右偏移位置 */
+    .offset-container {
+        margin-left: calc((100vw - 600px) * 0.85);
+        margin-right: calc((100vw - 600px) * 0.15);
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 60px 50px;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        width: 450px;
+        max-width: 90%;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Decorative top bar */
+    .container::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #ff6b6b, #ff8e53);
+    }
+
+    h2 {
+        margin-bottom: 30px;
+        color: #333;
+        font-weight: 700;
+        font-size: 26px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+        text-align: left;
+        position: relative;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #e1e1e1;
+        border-radius: 8px;
+        outline: none;
+        transition: all 0.3s;
+        font-size: 14px;
+        background: #f9f9f9;
+    }
+
+    .form-group input:focus {
+        border-color: #ff6b6b;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+    }
+
+    .btn {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-top: 15px;
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    }
+
+    .links {
+        margin-top: 25px;
+        font-size: 14px;
+        color: #888;
+    }
+
+    .links a {
+        color: #ff6b6b;
+        text-decoration: none;
+        font-weight: 500;
+        margin-left: 5px;
+        transition: color 0.2s;
+    }
+
+    .links a:hover {
+        color: #e55a5a;
+        text-decoration: underline;
+    }
+
+    /* Email validation group */
+    .email-group {
+        display: flex;
+        gap: 10px;
+    }
+
+    .email-input {
+        flex: 1;
+    }
+
+    .validation-status {
+        min-width: 30px;
+        height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        border-radius: 8px;
+        background: #f9f9f9;
+        border: 1px solid #e1e1e1;
+    }
+
+    .form-validation-error {
+        color: #e74c3c !important;
+        font-weight: bold;
+    }
+
+    .form-validation-success {
+        color: #27ae60 !important;
+        font-weight: bold;
+    }
+
+    /* Reset button */
+    .btn-reset {
+        background: #f8f9fa;
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        padding: 12px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .btn-reset:hover {
+        background: #e9ecef;
+        transform: translateY(-2px);
+    }
+
+    /* Form actions */
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .field-error {
+        color: #e74c3c;
+        font-size: 13px;
+        margin-top: 5px;
+        display: block;
+    }
 </style>
 </head>
 <body>
-	<div class="form-custom" style="max-width: 500px; width: 100%;">
-		<div class="form-header">
-			<h3>📝 用户注册</h3>
-			<p style="margin: 10px 0 0 0; font-size: 14px; opacity: 0.9;">创建您的账号，开始购物之旅</p>
-		</div>
+    <div class="container offset-container">
+        <h2>用户注册</h2>
 
-		<form action="user/register" name="myform" method="post" th:object="${bUser}" role="form">
-			<div class="form-group">
-				<label>📧 邮箱地址</label>
-				<div style="display: flex; gap: 10px; align-items: center;">
-					<input type="email" class="form-control"
-						   placeholder="请输入您的邮箱地址"
-						   th:field="*{bemail}"
-						   onblur="checkEmail()"
-						   required
-						   autofocus
-						   style="flex: 1;" />
-					<span id="isExit" style="min-width: 30px; text-align: center;"></span>
-				</div>
-				<span th:errors="*{bemail}" style="color: #FF6B6B; font-size: 13px;"></span>
-				<p style="margin-top: 8px; color: #6C757D; font-size: 13px;">
-					💡 邮箱将作为您的登录账号
-				</p>
-			</div>
+        <form action="user/register" name="myform" method="post" th:object="${bUser}" role="form">
+            <div class="form-group">
+                <label for="bemail">📧 邮箱地址</label>
+                <div class="email-group">
+                    <input type="email" id="bemail" class="form-control email-input"
+                           placeholder="请输入您的邮箱地址"
+                           th:field="*{bemail}"
+                           onblur="checkEmail()"
+                           required
+                           autofocus />
+                    <span id="isExit" class="validation-status"></span>
+                </div>
+                <span th:errors="*{bemail}" class="field-error"></span>
+            </div>
 
-			<div class="form-group">
-				<label>🔒 设置密码</label>
-				<input type="password" class="form-control"
-					   placeholder="请设置6-20位密码"
-					   th:field="*{bpwd}"
-					   required />
-				<span th:errors="*{bpwd}" style="color: #FF6B6B; font-size: 13px;"></span>
-			</div>
+            <div class="form-group">
+                <label for="bpwd">🔒 设置密码</label>
+                <input type="password" id="bpwd" class="form-control"
+                       placeholder="请设置6-20位密码"
+                       th:field="*{bpwd}"
+                       required />
+                <span th:errors="*{bpwd}" class="field-error"></span>
+            </div>
 
-			<div class="form-group">
-				<label>🔑 确认密码</label>
-				<input type="password" class="form-control"
-					   placeholder="请再次输入密码"
-					   th:field="*{rebpwd}"
-					   required />
-			</div>
+            <div class="form-group">
+                <label for="rebpwd">🔑 确认密码</label>
+                <input type="password" id="rebpwd" class="form-control"
+                       placeholder="请再次输入密码"
+                       th:field="*{rebpwd}"
+                       required />
+            </div>
 
-			<div class="form-group" style="margin-top: 30px;">
-				<button type="button" onclick="checkBpwd()" class="btn btn-custom-primary btn-block btn-lg">
-					立即注册
-				</button>
-			</div>
+            <button type="button" onclick="checkBpwd()" class="btn">
+                立即注册
+            </button>
 
-			<div class="form-group text-center">
-				<button type="reset" class="btn btn-default">重置</button>
-				<span style="margin: 0 10px; color: #CCC;">|</span>
-				<a href="user/toLogin" style="color: #667eea; font-weight: 600;">
-					已有账号？立即登录
-				</a>
-			</div>
-		</form>
-
-		<div class="text-center" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #E9ECEF;">
-			<a href="/" style="color: #667eea; font-weight: 600;">
-				← 返回首页
-			</a>
-		</div>
-	</div>
+            <div class="form-actions">
+                <button type="reset" class="btn-reset">重置</button>
+                <a href="user/toLogin" class="links">
+                    已有账号？立即登录
+                </a>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

@@ -64,7 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/user/toLogin", "/user/login", "/user/toRegister", "/user/register", "/user/isUse")
                 .permitAll()
                 .antMatchers("/validateCode").permitAll()
-                .antMatchers("/css/**", "/js/**", "/fonts/**", "/images/**").permitAll()
+                .antMatchers("/css/**", "/js/**", "/fonts/**", "/images/**", "/imgs/**").permitAll()
                 // 需要登录才能访问的URL（用户相关功能）
                 .antMatchers("/cart/**", "/user/exit").authenticated()
                 // 管理员URL不走Spring Security，使用session验证

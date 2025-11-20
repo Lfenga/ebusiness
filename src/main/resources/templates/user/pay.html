@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="css/custom.css" />
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/common.js"></script>
 <script type="text/javascript" th:inline="javascript">
 	function pay(){
 		// 显示加载动画
@@ -37,14 +38,13 @@
 	}
 	
 	function showAlert(message, type) {
-		var alertClass = type === 'warning' ? 'alert-warning' : 'alert-success';
-		var alertHtml = '<div class="alert alert-custom ' + alertClass + ' alert-dismissible" role="alert" style="position: fixed; top: 140px; left: 50%; transform: translateX(-50%); z-index: 10000; min-width: 300px;">' +
-			'<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>' +
-			'<strong>' + message + '</strong></div>';
-		$('body').append(alertHtml);
-		setTimeout(function() {
-			$('.alert').fadeOut(500, function() { $(this).remove(); });
-		}, 3000);
+		// 使用全局的showAlert函数（已在common.js中定义）
+		if (typeof window.showAlert === 'function') {
+			window.showAlert(message, type);
+		} else {
+			// 兼底方案
+			alert(message);
+		}
 	}
 </script>
 <style>

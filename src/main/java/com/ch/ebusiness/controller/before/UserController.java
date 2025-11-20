@@ -47,4 +47,10 @@ public class UserController {
 	    }
 		return userService.register(bUser);
 	}
+	
+	@RequestMapping("/userLogout")
+	public String userLogout(HttpSession session) {
+		session.invalidate();
+		return "redirect:/user/toLogin?logout=true";
+	}
 }

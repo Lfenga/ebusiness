@@ -44,14 +44,8 @@
 	}
 	
 	function showAlert(message, type) {
-		var alertClass = type === 'warning' ? 'alert-warning' : 'alert-success';
-		var alertHtml = '<div class="alert alert-custom ' + alertClass + ' alert-dismissible" role="alert" style="position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; min-width: 300px;">' +
-			'<button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>' +
-			'<strong>' + message + '</strong></div>';
-		$('body').append(alertHtml);
-		setTimeout(function() {
-			$('.alert').fadeOut(500, function() { $(this).remove(); });
-		}, 3000);
+		// 使用全局的showAlert函数（已在common.js中定义）
+		window.showAlert(message, type);
 	}
 </script>
 <style>
@@ -124,7 +118,7 @@
 		</form>
 		
 		<div class="text-center" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #E9ECEF;">
-			<a href="/" style="color: #667eea; font-weight: 600;">
+			<a href="/eBusiness" style="color: #667eea; font-weight: 600;">
 				← 返回首页
 			</a>
 		</div>

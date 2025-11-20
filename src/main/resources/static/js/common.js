@@ -1,43 +1,100 @@
 function checkNull(myvalue, mymessage){
 	if(myvalue.trim() == ""){
-		alert(mymessage);
+		showAlert(mymessage, 'warning');
 		return false;
 	}
 	return true;
 }
 
-// ========== 若依风格交互增强 ==========
+// Element Plus 风格的 Alert 消息框
+function showAlert(message, type = 'info', duration = 4000) {
+    const container = getOrCreateAlertContainer();
+    
+    const icons = {
+        success: '<svg class="alert-icon" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z" fill="currentColor"/></svg>',
+        warning: '<svg class="alert-icon" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm0 192a58.432 58.432 0 0 0-58.24 63.744l23.36 256.384a35.072 35.072 0 0 0 69.76 0l23.296-256.384A58.432 58.432 0 0 0 512 256zm0 512a51.2 51.2 0 1 0 0-102.4 51.2 51.2 0 0 0 0 102.4z" fill="currentColor"/></svg>',
+        error: '<svg class="alert-icon" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm0 393.664L407.936 353.6a38.4 38.4 0 1 0-54.336 54.336L457.664 512 353.6 616.064a38.4 38.4 0 1 0 54.336 54.336L512 566.336 616.064 670.4a38.4 38.4 0 1 0 54.336-54.336L566.336 512 670.4 407.936a38.4 38.4 0 1 0-54.336-54.336L512 457.664z" fill="currentColor"/></svg>',
+        info: '<svg class="alert-icon" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896.064A448 448 0 0 1 512 64zm23.744 191.488c0-15.616-10.624-23.04-31.744-23.04s-31.808 7.424-31.808 23.04v85.44c0 15.488 10.688 23.36 31.808 23.36s31.744-7.872 31.744-23.36v-85.44zm4.8 253.44H486.72c-15.488 0-23.04 10.688-23.04 31.744v201.216c0 15.552 10.752 23.744 32.256 23.744h22.208c15.552 0 23.296-8.192 23.296-23.744V540.672c0-21.056-7.744-31.744-23.296-31.744z" fill="currentColor"/></svg>'
+    };
+    
+    const alert = document.createElement('div');
+    alert.className = `el-alert el-alert--${type}`;
+    alert.innerHTML = `
+        <div class="el-alert__content">
+            ${icons[type]}
+            <span class="el-alert__title">${message}</span>
+            <button class="el-alert__close-btn" onclick="this.closest('.el-alert').remove()">
+                <svg viewBox="0 0 1024 1024"><path d="M764.288 214.592 512 466.88 259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512 214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z" fill="currentColor"/></svg>
+            </button>
+        </div>
+    `;
+    
+    container.appendChild(alert);
+    
+    // 入场动画
+    setTimeout(() => alert.classList.add('el-alert--show'), 10);
+    
+    // 自动关闭
+    if (duration > 0) {
+        setTimeout(() => {
+            alert.classList.add('el-alert--leave');
+            setTimeout(() => alert.remove(), 300);
+        }, duration);
+    }
+}
 
-// Toast通知
-function showToast(message, type = 'success', duration = 3000) {
-    let container = document.querySelector('.toast-container');
+function getOrCreateAlertContainer() {
+    let container = document.querySelector('.el-alert-container');
     if (!container) {
         container = document.createElement('div');
-        container.className = 'toast-container';
+        container.className = 'el-alert-container';
+        document.body.appendChild(container);
+    }
+    return container;
+}
+
+// ========== 若依风格交互增强 ==========
+
+// Element Plus 风格的 Message 通知
+function showToast(message, type = 'success', duration = 3000) {
+    let container = document.querySelector('.el-message-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'el-message-container';
         document.body.appendChild(container);
     }
     
     const icons = {
-        success: '✓',
-        error: '✕',
-        warning: '⚠',
-        info: 'ℹ'
+        success: '<svg class="el-message__icon" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z" fill="currentColor"/></svg>',
+        error: '<svg class="el-message__icon" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm0 393.664L407.936 353.6a38.4 38.4 0 1 0-54.336 54.336L457.664 512 353.6 616.064a38.4 38.4 0 1 0 54.336 54.336L512 566.336 616.064 670.4a38.4 38.4 0 1 0 54.336-54.336L566.336 512 670.4 407.936a38.4 38.4 0 1 0-54.336-54.336L512 457.664z" fill="currentColor"/></svg>',
+        warning: '<svg class="el-message__icon" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm0 192a58.432 58.432 0 0 0-58.24 63.744l23.36 256.384a35.072 35.072 0 0 0 69.76 0l23.296-256.384A58.432 58.432 0 0 0 512 256zm0 512a51.2 51.2 0 1 0 0-102.4 51.2 51.2 0 0 0 0 102.4z" fill="currentColor"/></svg>',
+        info: '<svg class="el-message__icon" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896.064A448 448 0 0 1 512 64zm23.744 191.488c0-15.616-10.624-23.04-31.744-23.04s-31.808 7.424-31.808 23.04v85.44c0 15.488 10.688 23.36 31.808 23.36s31.744-7.872 31.744-23.36v-85.44zm4.8 253.44H486.72c-15.488 0-23.04 10.688-23.04 31.744v201.216c0 15.552 10.752 23.744 32.256 23.744h22.208c15.552 0 23.296-8.192 23.296-23.744V540.672c0-21.056-7.744-31.744-23.296-31.744z" fill="currentColor"/></svg>'
     };
     
     const toast = document.createElement('div');
-    toast.className = `toast toast-${type}`;
+    toast.className = `el-message el-message--${type}`;
     toast.innerHTML = `
-        <span class="toast-icon">${icons[type]}</span>
-        <span class="toast-message">${message}</span>
-        <span class="toast-close" onclick="this.parentElement.remove()">×</span>
+        <div class="el-message__content">
+            ${icons[type]}
+            <span class="el-message__text">${message}</span>
+            <button class="el-message__close" onclick="this.closest('.el-message').remove()">
+                <svg viewBox="0 0 1024 1024"><path d="M764.288 214.592 512 466.88 259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512 214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z" fill="currentColor"/></svg>
+            </button>
+        </div>
     `;
     
     container.appendChild(toast);
     
-    setTimeout(() => {
-        toast.style.animation = 'slideOutRight 0.3s ease-in';
-        setTimeout(() => toast.remove(), 300);
-    }, duration);
+    // 入场动画
+    setTimeout(() => toast.classList.add('el-message--show'), 10);
+    
+    // 自动关闭
+    if (duration > 0) {
+        setTimeout(() => {
+            toast.classList.add('el-message--leave');
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    }
 }
 
 // 确认对话框
@@ -52,24 +109,31 @@ function showConfirm(options) {
         } = options;
         
         const icons = {
-            warning: '⚠️',
-            danger: '⚠️',
-            info: 'ℹ️',
-            success: '✓'
+            warning: '<svg class="el-messagebox__status" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm0 192a58.432 58.432 0 0 0-58.24 63.744l23.36 256.384a35.072 35.072 0 0 0 69.76 0l23.296-256.384A58.432 58.432 0 0 0 512 256zm0 512a51.2 51.2 0 1 0 0-102.4 51.2 51.2 0 0 0 0 102.4z" fill="#E6A23C"/></svg>',
+            danger: '<svg class="el-messagebox__status" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm0 393.664L407.936 353.6a38.4 38.4 0 1 0-54.336 54.336L457.664 512 353.6 616.064a38.4 38.4 0 1 0 54.336 54.336L512 566.336 616.064 670.4a38.4 38.4 0 1 0 54.336-54.336L566.336 512 670.4 407.936a38.4 38.4 0 1 0-54.336-54.336L512 457.664z" fill="#F56C6C"/></svg>',
+            info: '<svg class="el-messagebox__status" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896.064A448 448 0 0 1 512 64zm23.744 191.488c0-15.616-10.624-23.04-31.744-23.04s-31.808 7.424-31.808 23.04v85.44c0 15.488 10.688 23.36 31.808 23.36s31.744-7.872 31.744-23.36v-85.44zm4.8 253.44H486.72c-15.488 0-23.04 10.688-23.04 31.744v201.216c0 15.552 10.752 23.744 32.256 23.744h22.208c15.552 0 23.296-8.192 23.296-23.744V540.672c0-21.056-7.744-31.744-23.296-31.744z" fill="#909399"/></svg>',
+            success: '<svg class="el-messagebox__status" viewBox="0 0 1024 1024"><path d="M512 64a448 448 0 1 1 0 896 448 448 0 0 1 0-896zm-55.808 536.384-99.52-99.584a38.4 38.4 0 1 0-54.336 54.336l126.72 126.72a38.272 38.272 0 0 0 54.336 0l262.4-262.464a38.4 38.4 0 1 0-54.272-54.336L456.192 600.384z" fill="#67C23A"/></svg>'
         };
         
         const overlay = document.createElement('div');
-        overlay.className = 'modal-overlay';
+        overlay.className = 'el-overlay el-overlay--show';
         overlay.innerHTML = `
-            <div class="modal-dialog">
-                <div class="modal-header">
-                    <span class="modal-header-icon">${icons[type]}</span>
-                    <h3 class="modal-title">${title}</h3>
+            <div class="el-messagebox el-messagebox--show">
+                <div class="el-messagebox__header">
+                    <div class="el-messagebox__title">${title}</div>
+                    <button class="el-messagebox__headerbtn" onclick="this.closest('.el-overlay').remove()">
+                        <svg class="el-icon el-icon-close" viewBox="0 0 1024 1024"><path d="M764.288 214.592 512 466.88 259.712 214.592a31.936 31.936 0 0 0-45.12 45.12L466.752 512 214.528 764.224a31.936 31.936 0 1 0 45.12 45.184L512 557.184l252.288 252.288a31.936 31.936 0 0 0 45.12-45.12L557.12 512.064l252.288-252.352a31.936 31.936 0 1 0-45.12-45.184z" fill="currentColor"/></svg>
+                    </button>
                 </div>
-                <div class="modal-body">${message}</div>
-                <div class="modal-footer">
-                    <button class="btn-custom btn-info modal-cancel">${cancelText}</button>
-                    <button class="btn-custom btn-${type === 'danger' ? 'danger' : 'primary'} modal-confirm">${confirmText}</button>
+                <div class="el-messagebox__content">
+                    <div class="el-messagebox__container">
+                        ${icons[type]}
+                        <div class="el-messagebox__message">${message}</div>
+                    </div>
+                </div>
+                <div class="el-messagebox__btns">
+                    <button class="el-button el-button--default el-button--small modal-cancel">${cancelText}</button>
+                    <button class="el-button el-button--primary el-button--small modal-confirm">${confirmText}</button>
                 </div>
             </div>
         `;
