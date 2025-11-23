@@ -92,6 +92,43 @@
         .color-warning { color: #ffdd57; }
         .color-danger { color: #f14668; }
         .color-info { color: #3298dc; }
+        
+        /* 缓存统计卡片样式 */
+        .cache-stat-card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .cache-stat-card h4 {
+            margin-top: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .cache-stat-card .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .cache-stat-card .stat-row:last-child {
+            border-bottom: none;
+        }
+        
+        .cache-stat-card .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .cache-stat-card .stat-value {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
@@ -240,6 +277,43 @@
             </div>
         </div>
         
+        <!-- 缓存监控面板 -->
+        <div class="row">
+            <div class="col-md-12">
+                <div class="chart-container">
+                    <div class="chart-title">
+                        🚀 多级缓存性能监控
+                        <button class="btn btn-sm btn-primary pull-right" onclick="refreshCacheStats()">
+                            <i class="glyphicon glyphicon-refresh"></i> 刷新数据
+                        </button>
+                        <a href="/eBusiness/admin/cache/manage" class="btn btn-sm btn-info pull-right" style="margin-right: 10px;">
+                            <i class="glyphicon glyphicon-cog"></i> 缓存管理
+                        </a>
+                    </div>
+                    <div id="cacheStatsChart" class="chart chart-small"></div>
+                    <div class="row" style="margin-top: 20px;">
+                        <div class="col-md-4" th:each="stat : ${cacheStats}">
+                            <div class="cache-stat-card">
+                                <h4 th:text="${stat.cacheLevel}">缓存层级</h4>
+                                <div class="stat-row">
+                                    <span class="stat-label">命中率:</span>
+                                    <span class="stat-value" th:text="${#numbers.formatDecimal(stat.hitRate, 1, 2)} + '%'">-</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">请求次数:</span>
+                                    <span class="stat-value" th:text="${stat.requestCount}">-</span>
+                                </div>
+                                <div class="stat-row">
+                                    <span class="stat-label">缓存条目数:</span>
+                                    <span class="stat-value" th:text="${stat.cacheSize}">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 用户活跃时段热力图 -->
         <div class="row">
             <div class="col-md-12">
@@ -772,6 +846,108 @@
         function formatMoney(amount) {
             return parseFloat(amount).toFixed(2);
         }
+        
+        // 刷新缓存统计数据
+        function refreshCacheStats() {
+            $.ajax({
+                url: contextPath + '/admin/cache/stats',
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        renderCacheStatsChart(response.data);
+                        showAlert('缓存统计数据已刷新', 'success');
+                    } else {
+                        showAlert('刷新失败: ' + response.message, 'warning');
+                    }
+                },
+                error: function() {
+                    showAlert('刷新缓存统计失败', 'danger');
+                }
+            });
+        }
+        
+        // 渲染缓存统计图表
+        function renderCacheStatsChart(stats) {
+            var chart = echarts.init(document.getElementById('cacheStatsChart'));
+            
+            var categories = stats.map(s => s.cacheLevel);
+            var hitRates = stats.map(s => s.hitRate);
+            var requestCounts = stats.map(s => s.requestCount);
+            var cacheSizes = stats.map(s => s.cacheSize);
+            
+            var option = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                legend: {
+                    data: ['命中率(%)', '请求次数', '缓存条目数']
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'category',
+                    data: categories
+                },
+                yAxis: [
+                    {
+                        type: 'value',
+                        name: '命中率(%)/请求次数',
+                        position: 'left'
+                    },
+                    {
+                        type: 'value',
+                        name: '缓存条目数',
+                        position: 'right'
+                    }
+                ],
+                series: [
+                    {
+                        name: '命中率(%)',
+                        type: 'bar',
+                        data: hitRates,
+                        itemStyle: {
+                            color: '#667eea'
+                        }
+                    },
+                    {
+                        name: '请求次数',
+                        type: 'bar',
+                        data: requestCounts,
+                        itemStyle: {
+                            color: '#48c774'
+                        }
+                    },
+                    {
+                        name: '缓存条目数',
+                        type: 'line',
+                        yAxisIndex: 1,
+                        data: cacheSizes,
+                        itemStyle: {
+                            color: '#f14668'
+                        }
+                    }
+                ]
+            };
+            
+            chart.setOption(option);
+            window.addEventListener('resize', () => chart.resize());
+        }
+        
+        // 页面加载时初始化缓存统计图表
+        $(document).ready(function() {
+            // 如果有缓存数据，渲染图表
+            var cacheStatsData = /*[[${cacheStats}]]*/ [];
+            if (cacheStatsData && cacheStatsData.length > 0) {
+                renderCacheStatsChart(cacheStatsData);
+            }
+        });
     </script>
 </body>
 </html>

@@ -2,6 +2,7 @@ package com.ch.ebusiness.controller.admin;
 
 import com.ch.ebusiness.dto.*;
 import com.ch.ebusiness.service.admin.StatisticsService;
+import com.ch.ebusiness.service.MultiLevelCacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,12 +21,36 @@ public class StatisticsController extends AdminBaseController {
     @Autowired
     private StatisticsService statisticsService;
 
+    @Autowired
+    private MultiLevelCacheService cacheService;
+
     /**
      * 跳转到仪表盘页面
      */
     @RequestMapping("/dashboard")
     public String dashboard(Model model) {
+        // 添加缓存统计数据到模型
+        List<CacheStatsDTO> cacheStats = cacheService.getCacheStats();
+        model.addAttribute("cacheStats", cacheStats);
         return "admin/dashboard";
+    }
+
+    /**
+     * 跳转到缓存管理页面
+     */
+    @RequestMapping("/cacheManagement")
+    public String cacheManagement(Model model) {
+        // 添加缓存统计数据到模型
+        List<CacheStatsDTO> cacheStats = cacheService.getCacheStats();
+        model.addAttribute("cacheStats", cacheStats);
+
+        // 获取所有缓存键和常用模式
+        List<String> allKeys = cacheService.getAllCacheKeys();
+        List<String> patterns = cacheService.getCommonCachePatterns();
+        model.addAttribute("cacheKeys", allKeys);
+        model.addAttribute("cachePatterns", patterns);
+
+        return "admin/cacheManagement";
     }
 
     /**

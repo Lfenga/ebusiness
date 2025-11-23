@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>缓存管理 - 电商管理系统</title>
+    <base th:href="@{/}">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/ruoyi-admin.css" rel="stylesheet">
+    <link href="css/custom.css" rel="stylesheet">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/common.js"></script>
+    <style>
+        .cache-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .cache-panel h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .quick-action-btn {
+            margin: 5px;
+        }
+        
+        .cache-stat-item {
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            background: #f8f9fa;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        
+        .cache-stat-item h4 {
+            margin: 0 0 10px 0;
+            color: #333;
+            font-size: 16px;
+        }
+        
+        .stat-detail {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <div th:replace="admin/header::myheader"></div>
+    
+    <div class="main-content">
+        <div class="page-container">
+            <h2 class="page-title">🚀 缓存管理中心</h2>
+            
+            <!-- 快捷操作 -->
+            <div class="cache-panel">
+                <h3>⚡ 快捷操作</h3>
+                <button class="btn btn-primary quick-action-btn" onclick="clearGoodsTypesCache()">
+                    <i class="glyphicon glyphicon-trash"></i> 清除商品类型缓存
+                </button>
+                <button class="btn btn-primary quick-action-btn" onclick="clearLastedGoodsCache()">
+                    <i class="glyphicon glyphicon-trash"></i> 清除首页商品列表
+                </button>
+                <button class="btn btn-primary quick-action-btn" onclick="clearGoodsDetailCache()">
+                    <i class="glyphicon glyphicon-trash"></i> 清除商品详情缓存
+                </button>
+                <button class="btn btn-primary quick-action-btn" onclick="clearSearchCache()">
+                    <i class="glyphicon glyphicon-trash"></i> 清除搜索结果缓存
+                </button>
+                <button class="btn btn-warning quick-action-btn" onclick="clearAllCache()">
+                    <i class="glyphicon glyphicon-warning-sign"></i> 清空所有缓存
+                </button>
+                <button class="btn btn-success quick-action-btn" onclick="refreshStats()">
+                    <i class="glyphicon glyphicon-refresh"></i> 刷新统计
+                </button>
+            </div>
+            
+            <!-- 缓存统计 -->
+            <div class="cache-panel">
+                <h3>📊 缓存统计信息</h3>
+                <div id="cacheStatsList">
+                    <div class="cache-stat-item" th:each="stat : ${cacheStats}">
+                        <h4 th:text="${stat.cacheLevel}">缓存层级</h4>
+                        <div class="stat-detail">
+                            <span>命中率:</span>
+                            <strong th:text="${#numbers.formatDecimal(stat.hitRate, 1, 2)} + '%'">-</strong>
+                        </div>
+                        <div class="stat-detail">
+                            <span>命中次数:</span>
+                            <strong th:text="${stat.hitCount}">-</strong>
+                        </div>
+                        <div class="stat-detail">
+                            <span>未命中次数:</span>
+                            <strong th:text="${stat.missCount}">-</strong>
+                        </div>
+                        <div class="stat-detail">
+                            <span>总请求次数:</span>
+                            <strong th:text="${stat.requestCount}">-</strong>
+                        </div>
+                        <div class="stat-detail">
+                            <span>缓存条目数:</span>
+                            <strong th:text="${stat.cacheSize}">-</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 手动清除缓存 -->
+            <div class="cache-panel">
+                <h3>🔧 手动清除缓存</h3>
+                <div class="form-group">
+                    <label>选择缓存键:</label>
+                    <select id="cacheKeySelect" class="form-control">
+                        <option value="">-- 请选择缓存键 --</option>
+                        <option th:each="key : ${cacheKeys}" th:value="${key}" th:text="${key}"></option>
+                    </select>
+                </div>
+                <button class="btn btn-danger" onclick="evictCacheKey()">
+                    <i class="glyphicon glyphicon-remove"></i> 清除指定键
+                </button>
+                
+                <div class="form-group" style="margin-top: 20px;">
+                    <label>选择缓存模式:</label>
+                    <select id="patternSelect" class="form-control">
+                        <option value="">-- 请选择缓存模式 --</option>
+                        <option th:each="pattern : ${cachePatterns}" th:value="${pattern}" th:text="${pattern}"></option>
+                    </select>
+                </div>
+                <button class="btn btn-warning" onclick="evictByPattern()">
+                    <i class="glyphicon glyphicon-filter"></i> 按模式清除
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        var contextPath = '/eBusiness';
+        
+        // 清除商品类型缓存
+        function clearGoodsTypesCache() {
+            if (!confirm('确定要清除商品类型缓存吗？')) {
+                return;
+            }
+            quickClear('/admin/cache/quickClear/goodsTypes');
+        }
+        
+        // 清除首页商品列表
+        function clearLastedGoodsCache() {
+            if (!confirm('确定要清除首页商品列表缓存吗？')) {
+                return;
+            }
+            quickClear('/admin/cache/quickClear/lastedGoods');
+        }
+        
+        // 清除商品详情缓存
+        function clearGoodsDetailCache() {
+            if (!confirm('确定要清除商品详情缓存吗？')) {
+                return;
+            }
+            quickClear('/admin/cache/quickClear/goodsDetail');
+        }
+        
+        // 清除搜索结果缓存
+        function clearSearchCache() {
+            if (!confirm('确定要清除搜索结果缓存吗？')) {
+                return;
+            }
+            quickClear('/admin/cache/quickClear/search');
+        }
+        
+        // 快捷清除通用方法
+        function quickClear(url) {
+            $.ajax({
+                url: contextPath + url,
+                method: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        showAlert(response.message, 'success');
+                        setTimeout(refreshStats, 500);
+                    } else {
+                        showAlert(response.message, 'warning');
+                    }
+                },
+                error: function() {
+                    showAlert('清除缓存失败', 'danger');
+                }
+            });
+        }
+        
+        // 清空所有缓存
+        function clearAllCache() {
+            if (!confirm('确定要清空所有缓存吗？这将影响系统性能！')) {
+                return;
+            }
+            
+            $.ajax({
+                url: contextPath + '/admin/cache/evictAll',
+                method: 'POST',
+                success: function(response) {
+                    if (response.success) {
+                        showAlert(response.message, 'success');
+                        setTimeout(refreshStats, 500);
+                    } else {
+                        showAlert(response.message, 'warning');
+                    }
+                },
+                error: function() {
+                    showAlert('清空缓存失败', 'danger');
+                }
+            });
+        }
+        
+        // 清除指定键
+        function evictCacheKey() {
+            var cacheKey = $('#cacheKeySelect').val();
+            if (!cacheKey) {
+                showAlert('请选择缓存键', 'warning');
+                return;
+            }
+            
+            if (!confirm('确定要清除缓存键: ' + cacheKey + ' 吗？')) {
+                return;
+            }
+            
+            $.ajax({
+                url: contextPath + '/admin/cache/evict',
+                method: 'POST',
+                data: { cacheKey: cacheKey },
+                success: function(response) {
+                    if (response.success) {
+                        showAlert(response.message, 'success');
+                        $('#cacheKeySelect').val('');
+                        setTimeout(refreshStats, 500);
+                    } else {
+                        showAlert(response.message, 'warning');
+                    }
+                },
+                error: function() {
+                    showAlert('清除缓存失败', 'danger');
+                }
+            });
+        }
+        
+        // 按模式清除
+        function evictByPattern() {
+            var pattern = $('#patternSelect').val();
+            if (!pattern) {
+                showAlert('请选择缓存模式', 'warning');
+                return;
+            }
+            
+            if (!confirm('确定要按模式清除缓存: ' + pattern + ' 吗？')) {
+                return;
+            }
+            
+            $.ajax({
+                url: contextPath + '/admin/cache/evictByPattern',
+                method: 'POST',
+                data: { keyPattern: pattern },
+                success: function(response) {
+                    if (response.success) {
+                        showAlert(response.message, 'success');
+                        $('#patternSelect').val('');
+                        setTimeout(refreshStats, 500);
+                    } else {
+                        showAlert(response.message, 'warning');
+                    }
+                },
+                error: function() {
+                    showAlert('清除缓存失败', 'danger');
+                }
+            });
+        }
+        
+        // 刷新统计
+        function refreshStats() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
