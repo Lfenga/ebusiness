@@ -9,11 +9,13 @@
 <link rel="stylesheet" href="css/custom.css" />
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/starfield.js"></script>
+<script src="js/particles.js"></script>
 </head>
 <body>
 <div th:include="user/header"></div>
 
-<div class="container" style="margin-top: 30px; margin-bottom: 60px;">
+<div class="container page-transition" style="margin-top: 30px; margin-bottom: 60px;">
 	<!-- 面包屑导航 -->
 	<ol class="breadcrumb breadcrumb-custom">
 		<li><a href="/">首页</a></li>
@@ -53,7 +55,7 @@
 								</a>
 							</td>
 							<td class="text-center" style="vertical-align: middle;">
-								<span style="color: #FF6B6B; font-weight: 700; font-size: 16px;">
+								<span style="color: var(--primary-color); font-weight: 700; font-size: 16px;">
 									¥<span th:text="${cart.grprice}"></span>
 								</span>
 							</td>
@@ -63,8 +65,8 @@
 								</span>
 							</td>
 							<td class="text-center" style="vertical-align: middle;">
-								<span style="color: #FF6B6B; font-weight: 700; font-size: 18px;">
-									¥<span th:text="${cart.smallsum}"></span>
+								<span style="color: var(--primary-color); font-weight: 700; font-size: 18px;">
+									¥<span class="item-price" th:text="${cart.smallsum}"></span>
 								</span>
 							</td>
 						</tr>
@@ -116,5 +118,28 @@
 		</ul>
 	</div>
 </div>
+
+<script>
+$(document).ready(function() {
+	// 为总金额添加数字滚动动画
+	$('.total-amount span').each(function() {
+		var finalValue = parseFloat($(this).text());
+		if (!isNaN(finalValue) && window.particleSystem) {
+			window.particleSystem.animateNumber(this, 0, finalValue, 1000);
+		}
+	});
+	
+	// 为每个商品价格添加动画
+	$('.item-price').each(function(index) {
+		var $this = $(this);
+		var finalValue = parseFloat($this.text());
+		if (!isNaN(finalValue) && window.particleSystem) {
+			setTimeout(function() {
+				window.particleSystem.animateNumber($this[0], 0, finalValue, 600);
+			}, index * 80);
+		}
+	});
+});
+</script>
 </body>
 </html>

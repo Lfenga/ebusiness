@@ -10,6 +10,8 @@
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/common.js"></script>
+<script src="js/starfield.js"></script>
+<script src="js/particles.js"></script>
 <script type="text/javascript">
 	function deleteCart(obj){
 		if (typeof window.showConfirm === 'function') {
@@ -36,21 +38,49 @@
 			}
 		}
 	}
+	
 	function clearCart(){
-		if(window.confirm("确认清空购物车吗？此操作不可恢复！")){
-			//获取路径
-			var pathName=window.document.location.pathname;
-			//截取，得到项目名称
-			var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
-			window.location.href = projectName + "/cart/clearCart";
+		if (typeof window.showConfirm === 'function') {
+			// 使用Element Plus风格的确认对话框
+			window.showConfirm(
+				'确认清空购物车吗？',
+				'此操作不可恢复，将删除所有商品！',
+				function() {
+					//获取路径
+					var pathName=window.document.location.pathname;
+					//截取，得到项目名称
+					var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
+					window.location.href = projectName + "/cart/clearCart";
+				}
+			);
+		} else {
+			// 降级处理：使用原生确认对话框
+			if(window.confirm("确认清空购物车吗？此操作不可恢复！")){
+				//获取路径
+				var pathName=window.document.location.pathname;
+				//截取，得到项目名称
+				var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
+				window.location.href = projectName + "/cart/clearCart";
+			}
 		}
 	}
+	
+	// 页面加载完成后初始化动画
+	$(document).ready(function() {
+		// 为购物车金额添加数字滚动动画
+		$('.total-amount span').each(function() {
+			var finalValue = parseFloat($(this).text());
+			if (!isNaN(finalValue) && window.particleSystem) {
+				window.particleSystem.animateNumber(this, 0, finalValue, 1000);
+			}
+		});
+	});
 </script>
 </head>
 <body>
 <div th:include="user/header"></div>
 
-<div class="container" style="margin-top: 30px; margin-bottom: 60px;">
+<div class="container page-transition" style="margin-top: 30px; margin-bottom: 60px;">
 	<!-- 面包屑导航 -->
 	<ol class="breadcrumb breadcrumb-custom">
 		<li><a th:href="@{/}">首页</a></li>
@@ -91,7 +121,7 @@
 								</a>
 							</td>
 							<td class="text-center" style="vertical-align: middle;">
-								<span style="color: #FF6B6B; font-weight: 700; font-size: 18px;">
+								<span style="color: var(--primary-color); font-weight: 700; font-size: 18px;">
 									¥<span th:text="${cart.grprice}"></span>
 								</span>
 							</td>
@@ -101,7 +131,7 @@
 								</span>
 							</td>
 							<td class="text-center" style="vertical-align: middle;">
-								<span style="color: #FF6B6B; font-weight: 700; font-size: 20px;">
+								<span style="color: var(--primary-color); font-weight: 700; font-size: 20px;">
 									¥<span th:text="${cart.smallsum}"></span>
 								</span>
 							</td>

@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50740
 File Encoding         : 65001
 
-Date: 2025-11-24 11:45:52
+Date: 2025-11-24 18:17:06
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -44,7 +44,7 @@ CREATE TABLE `admin_operation_log` (
   KEY `idx_operation_type` (`operation_type`),
   KEY `idx_status` (`status`),
   CONSTRAINT `admin_operation_log_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `ausertable` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=89 DEFAULT CHARSET=utf8mb4 COMMENT='管理员操作日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8mb4 COMMENT='管理员操作日志表';
 
 -- ----------------------------
 -- Records of admin_operation_log
@@ -89,6 +89,14 @@ INSERT INTO `admin_operation_log` VALUES ('85', '1', 'admin', '系统管理员',
 INSERT INTO `admin_operation_log` VALUES ('86', '1', 'admin', '系统管理员', 'DELETE', '缓存管理', '清除商品类型缓存 [键: index:goods_types]', '', null, 'quickClearGoodsTypes', '[]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-21 12:04:33', '3', 'SUCCESS', null);
 INSERT INTO `admin_operation_log` VALUES ('87', '1', 'admin', '系统管理员', 'UPDATE', '商品管理', '修改商品 [ID:2, 名称:手机, 状态:上架]', 'Goods', '2', 'updateGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 11:36:08', '30', 'SUCCESS', null);
 INSERT INTO `admin_operation_log` VALUES ('88', '1', 'admin', '系统管理员', 'DELETE', '缓存管理', '清空所有缓存', '', null, 'evictAllCache', '[]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 11:41:41', '3', 'SUCCESS', null);
+INSERT INTO `admin_operation_log` VALUES ('89', '1', 'admin', '系统管理员', 'ADD', '商品管理', '添加商品', 'Goods', '9', 'addGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 15:26:50', '38', 'SUCCESS', null);
+INSERT INTO `admin_operation_log` VALUES ('90', '1', 'admin', '系统管理员', 'ADD', '商品管理', '添加商品', 'Goods', '10', 'addGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 15:37:23', '54', 'SUCCESS', null);
+INSERT INTO `admin_operation_log` VALUES ('91', '2', 'root', '系统管理员2', 'ADD', '商品管理', '添加商品', 'Goods', '11', 'addGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 16:46:54', '83', 'SUCCESS', null);
+INSERT INTO `admin_operation_log` VALUES ('92', '2', 'root', '系统管理员2', 'ADD', '商品管理', '添加商品', 'Goods', '12', 'addGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 17:43:55', '74', 'SUCCESS', null);
+INSERT INTO `admin_operation_log` VALUES ('93', '2', 'root', '系统管理员2', 'ADD', '商品管理', '添加商品', 'Goods', '13', 'addGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 17:45:48', '19', 'SUCCESS', null);
+INSERT INTO `admin_operation_log` VALUES ('94', '2', 'root', '系统管理员2', 'ADD', '商品管理', '添加商品', 'Goods', '14', 'addGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 18:00:26', '46', 'SUCCESS', null);
+INSERT INTO `admin_operation_log` VALUES ('95', '1', 'admin', '系统管理员', 'ADD', '商品管理', '添加商品', 'Goods', '15', 'addGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 18:03:42', '55', 'SUCCESS', null);
+INSERT INTO `admin_operation_log` VALUES ('96', '1', 'admin', '系统管理员', 'ADD', '商品管理', '添加商品', 'Goods', '16', 'addGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 18:14:06', '14', 'SUCCESS', null);
 
 -- ----------------------------
 -- Table structure for ausertable
@@ -114,8 +122,8 @@ CREATE TABLE `ausertable` (
 -- ----------------------------
 -- Records of ausertable
 -- ----------------------------
-INSERT INTO `ausertable` VALUES ('1', 'admin', '$2a$10$B0mMb0sbJcdlBomYuW3wNeMZ73ACtRkN0k3Fg5VgEgd4vBKCqt51q', 'admin@ebusiness.com', '系统管理员', null, '1', '2025-11-16 16:39:56', '2025-11-24 11:35:05');
-INSERT INTO `ausertable` VALUES ('2', 'root', '$2a$10$4Oc0c3EvzujaFQTbfH/UGejLdLR07aXJLpenNKd6diR.Q6Dt5jqr.', '11@qq.com', '系统管理员2', '11111111111', '1', '2025-11-16 22:07:55', '2025-11-19 19:52:11');
+INSERT INTO `ausertable` VALUES ('1', 'admin', '$2a$10$B0mMb0sbJcdlBomYuW3wNeMZ73ACtRkN0k3Fg5VgEgd4vBKCqt51q', 'admin@ebusiness.com', '系统管理员', null, '1', '2025-11-16 16:39:56', '2025-11-24 18:02:14');
+INSERT INTO `ausertable` VALUES ('2', 'root', '$2a$10$4Oc0c3EvzujaFQTbfH/UGejLdLR07aXJLpenNKd6diR.Q6Dt5jqr.', '11@qq.com', '系统管理员2', '11111111111', '1', '2025-11-16 22:07:55', '2025-11-24 17:43:23');
 INSERT INTO `ausertable` VALUES ('6', '2222', '$2a$10$Cy06A/z5sNa3GZHqAretoOx2jiCu35mMauhc/ZUe3720vw3lvvJ86', '2222@qq.com', '系统管理员22', '22222222222', '1', '2025-11-19 20:13:17', null);
 
 -- ----------------------------
@@ -175,7 +183,7 @@ CREATE TABLE `goodstable` (
   PRIMARY KEY (`id`),
   KEY `goodstype_id` (`goodstype_id`),
   CONSTRAINT `goodstable_ibfk_1` FOREIGN KEY (`goodstype_id`) REFERENCES `goodstype` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of goodstable
@@ -186,6 +194,14 @@ INSERT INTO `goodstable` VALUES ('3', '沙发', '3000.00', '2500.00', '19', '201
 INSERT INTO `goodstable` VALUES ('4', '电脑', '1800.00', '1700.00', '28', '202511315203635221.jpg', '1', '1');
 INSERT INTO `goodstable` VALUES ('6', 'xmll', '111.00', '100.00', '11', '202511320215541868.webp', '1', '1');
 INSERT INTO `goodstable` VALUES ('8', '二手飞机', '121.00', '102.00', '94', '202511323000814118.png', '3', '1');
+INSERT INTO `goodstable` VALUES ('9', '男士英伦风帅气商务西装套装新郎结婚韩版修身型男高端双排扣西服', '836.07', '635.75', '23', '202511328152649471.png', '1', '1');
+INSERT INTO `goodstable` VALUES ('10', '你好卡农 毛毛立领插肩袖棉服女冬季2025新款设计感休闲百搭外套', '368.00', '268.00', '43', '202511328153722658.png', '1', '1');
+INSERT INTO `goodstable` VALUES ('11', 'Apple/苹果 iPhone 17 Pro Max', '9999.90', '8888.70', '66', '202511328164653698.png', '2', '1');
+INSERT INTO `goodstable` VALUES ('12', '2025新款英特尔i9级处理器笔记本电脑4K超轻薄办公设计游戏电竞本', '970.00', '705.00', '34', '202511328174355358.png', '2', '1');
+INSERT INTO `goodstable` VALUES ('13', '电热水器空心墙专用支架挂架龙门型架子墙壁承重调节挂板通用配件', '52.58', '50.00', '23', '202511328174547704.png', '3', '1');
+INSERT INTO `goodstable` VALUES ('14', '短款羽绒服女冬季2025年新款加厚棉服面包服外套宽松时尚洋气学生', '125.00', '95.00', '36', '202511328180025662.png', '1', '1');
+INSERT INTO `goodstable` VALUES ('15', '【柜版直发】MON*90白鸭绒连帽加厚羽绒服女雾面哑光情侣保暖外套', '697.00', '583.00', '75', '202511328180342105.png', '1', '1');
+INSERT INTO `goodstable` VALUES ('16', '智能手表16GB+256GB插卡通话手表运动学习办公S10promaxa全网通5G', '149.00', '120.00', '22', '202511328181406411.png', '2', '1');
 
 -- ----------------------------
 -- Table structure for goodstype

@@ -22,6 +22,8 @@ public interface CartService {
 
 	public String myOder(Model model, HttpSession session);
 
+	public String myOder(Model model, HttpSession session, Integer page);
+
 	public String orderDetail(Model model, Integer id);
 
 	public String updateUpwd(HttpSession session, String bpwd);

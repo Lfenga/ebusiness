@@ -58,7 +58,21 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 	<!-- 我的订单 -->
 	<select id="myOrder"  resultType="map" parameterType="Integer">
-		select id, amount, busertable_id, status, orderdate  from ORDERBASETABLE where busertable_id = #{uid} 
+		select id, amount, busertable_id, status, orderdate  from ORDERBASETABLE where busertable_id = #{uid} order by id desc
+	</select>
+	
+	<!-- 统计我的订单总数 -->
+	<select id="countMyOrder" resultType="int" parameterType="Integer">
+		select count(*) from ORDERBASETABLE where busertable_id = #{uid}
+	</select>
+	
+	<!-- 我的订单（分页） -->
+	<select id="myOrderByPage" resultType="map">
+		select id, amount, busertable_id, status, orderdate 
+		from ORDERBASETABLE 
+		where busertable_id = #{uid} 
+		order by id desc
+		limit #{startIndex}, #{pageSize}
 	</select>
 	<!-- 订单详情 -->
 	<select id="orderDetail" resultType="map"  parameterType="Integer">

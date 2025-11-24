@@ -10,6 +10,8 @@
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script src="js/common.js"></script>
+<script src="js/starfield.js"></script>
+<script src="js/particles.js"></script>
 <script type="text/javascript" th:inline="javascript">
 	function pay(){
 		// 显示加载动画
@@ -55,12 +57,14 @@
 </script>
 <style>
 	body {
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+		background: var(--gradient-primary);
 		min-height: 100vh;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		padding: 20px;
+		position: relative;
+		overflow: hidden;
 	}
 	.success-card {
 		background: white;
@@ -90,12 +94,21 @@
 		感谢您的购买，您的订单已成功提交
 	</p>
 	
-	<div style="background: linear-gradient(135deg, #FFF5F5 0%, #FFE5E5 100%); padding: 30px; border-radius: 12px; margin-bottom: 40px;">
-		<p style="color: #6C757D; font-size: 14px; margin-bottom: 10px;">订单编号</p>
-		<p style="color: #FF6B6B; font-size: 32px; font-weight: 700; margin: 0;">
+	<div style="background: linear-gradient(135deg, #FFF5F0 0%, #FFE5D9 100%); padding: 30px; border-radius: 12px; margin-bottom: 40px; box-shadow: 0 4px 12px rgba(255, 102, 0, 0.15);">
+		<p style="color: var(--text-secondary); font-size: 14px; margin-bottom: 10px;">订单编号</p>
+		<p style="color: var(--primary-color); font-size: 32px; font-weight: 700; margin: 0; text-shadow: 0 2px 4px rgba(255, 102, 0, 0.2);">
 			<span id="oid" th:text="${order.id}"></span>
 		</p>
 	</div>
+	
+	<script>
+	// 页面加载完成后触发礼花动画
+	$(document).ready(function() {
+		if (window.particleSystem) {
+			window.particleSystem.createConfetti(50);
+		}
+	});
+	</script>
 	
 	<div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
 		<button onclick="pay()" id="payBtn" class="btn btn-custom-primary btn-lg btn-icon">

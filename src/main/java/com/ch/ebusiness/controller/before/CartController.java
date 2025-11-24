@@ -53,8 +53,8 @@ public class CartController extends BeforeBaseController {
 	}
 
 	@RequestMapping("/myOder")
-	public String myOder(Model model, HttpSession session) {
-		return cartService.myOder(model, session);
+	public String myOder(Model model, HttpSession session, Integer page) {
+		return cartService.myOder(model, session, page);
 	}
 
 	@RequestMapping("/orderDetail")

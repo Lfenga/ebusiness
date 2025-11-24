@@ -54,22 +54,27 @@ public class GoodsServiceImpl implements GoodsService {
 		MultipartFile myfile = goods.getFileName();
 		// 如果选择了上传文件，将文件上传到指定的目录images
 		if (!myfile.isEmpty()) {
-			// 上传文件路径（生产环境）
-			// String path = request.getServletContext().getRealPath("/images/");
-			// 获得上传文件原名
-			// 上传文件路径（开发环境）
-			String path = "F:\\sendWork\\javaEE\\work8\\eBusiness\\eBusiness\\src\\main\\resources\\static\\images";
+			// 获取项目根目录（动态获取，适配不同环境）
+			String projectPath = System.getProperty("user.dir");
+			String path = projectPath + File.separator + "src" + File.separator + "main" +
+					File.separator + "resources" + File.separator + "static" + File.separator + "images";
+
 			// 获得上传文件原名
 			String fileName = myfile.getOriginalFilename();
 			// 对文件重命名
 			String fileNewName = MyUtil.getNewFileName(fileName);
 			File filePath = new File(path + File.separator + fileNewName);
+
 			// 如果文件目录不存在，创建目录
 			if (!filePath.getParentFile().exists()) {
 				filePath.getParentFile().mkdirs();
+				logger.info("创建图片目录: {}", filePath.getParentFile().getAbsolutePath());
 			}
+
 			// 将上传文件保存到一个目标文件中
 			myfile.transferTo(filePath);
+			logger.info("图片上传成功: {}, 路径: {}", fileNewName, filePath.getAbsolutePath());
+
 			// 将重命名后的图片名存到goods对象中，添加时使用
 			goods.setGpicture(fileNewName);
 		}

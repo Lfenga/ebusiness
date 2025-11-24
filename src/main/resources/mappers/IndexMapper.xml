@@ -30,7 +30,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="tid != 0">
 				and gy.id = #{tid} 
 			</if>
-		order by  gt.id desc limit 6 
+		order by  gt.id desc
 	</select>
 	<!-- 首页搜索 -->
 	<select id="search" resultType="Goods" parameterType="String">

@@ -9,17 +9,44 @@
 <link rel="stylesheet" href="css/custom.css" />
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+<script src="js/starfield.js"></script>
+<script src="js/particles.js"></script>
 </head>
 <body>
 <div th:include="user/header"></div>
 
-<div class="container" style="margin-top: 30px; margin-bottom: 60px;">
+<div class="container page-transition" style="margin-top: 30px; margin-bottom: 60px;">
 	<!-- 面包屑导航 -->
 	<ol class="breadcrumb breadcrumb-custom">
 		<li><a th:href="@{/}">首页</a></li>
 		<li><a th:href="@{/cart/myOder}">我的订单</a></li>
 		<li class="active">订单详情</li>
 	</ol>
+	
+	<!-- 订单状态进度条 -->
+	<div class="panel-custom" th:unless="${#lists.isEmpty(orderDetail)}">
+		<div class="panel-body">
+			<div class="order-progress">
+				<div class="order-progress-line" style="width: 75%;"></div>
+				<div class="order-step completed">
+					<div class="order-step-icon">📝</div>
+					<div class="order-step-label">下单成功</div>
+				</div>
+				<div class="order-step completed">
+					<div class="order-step-icon">💳</div>
+					<div class="order-step-label">支付完成</div>
+				</div>
+				<div class="order-step active">
+					<div class="order-step-icon">🚚</div>
+					<div class="order-step-label">商品配送</div>
+				</div>
+				<div class="order-step">
+					<div class="order-step-icon">✅</div>
+					<div class="order-step-label">确认收货</div>
+				</div>
+			</div>
+		</div>
+	</div>
 	
 	<div class="panel-custom">
 		<div class="panel-heading">
@@ -57,7 +84,7 @@
 								</a>
 							</td>
 							<td class="text-center" style="vertical-align: middle;">
-								<span style="color: #FF6B6B; font-weight: 700; font-size: 16px;">
+								<span style="color: var(--primary-color); font-weight: 700; font-size: 16px;">
 									¥<span th:text="${od.grprice}"></span>
 								</span>
 							</td>
@@ -67,8 +94,8 @@
 								</span>
 							</td>
 							<td class="text-center" style="vertical-align: middle;">
-								<span style="color: #FF6B6B; font-weight: 700; font-size: 18px;">
-									¥<span th:text="${od.grprice * od.shoppingnum}"></span>
+								<span style="color: var(--primary-color); font-weight: 700; font-size: 18px;">
+									¥<span class="order-subtotal" th:text="${od.grprice * od.shoppingnum}"></span>
 								</span>
 							</td>
 						</tr>
@@ -97,5 +124,25 @@
 		</div>
 	</div>
 </div>
+
+<script>
+$(document).ready(function() {
+	// 订单进度条动画
+	if (window.particleSystem) {
+		window.particleSystem.animateOrderProgress(2); // 2为已完成的步骤数
+	}
+	
+	// 为小计金额添加数字滚动动画
+	$('.order-subtotal').each(function(index) {
+		var $this = $(this);
+		var finalValue = parseFloat($this.text());
+		if (!isNaN(finalValue) && window.particleSystem) {
+			setTimeout(function() {
+				window.particleSystem.animateNumber($this[0], 0, finalValue, 700);
+			}, index * 100);
+		}
+	});
+});
+</script>
 </body>
 </html>

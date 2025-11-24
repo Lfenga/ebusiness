@@ -15,19 +15,19 @@
 	<div th:include="user/header"></div>
 	
 	<!-- 主要内容区域 -->
-	<div class="container" style="margin-top: 30px;">
+	<div class="container page-transition" style="margin-top: 30px;">
 		
 		<!-- 页面标题 -->
-		<div class="page-header" style="border-bottom: 3px solid #667eea; padding-bottom: 15px; margin-bottom: 30px;">
+		<div class="page-header" style="border-bottom: 3px solid var(--primary-color); padding-bottom: 15px; margin-bottom: 30px;">
 			<h2 class="text-gradient" style="font-weight: 700; margin: 0;">
 				🎉 最新商品
 			</h2>
-			<p style="color: #6C757D; margin-top: 10px; margin-bottom: 0;">发现最新上架的热门商品</p>
+			<p style="color: var(--text-secondary); margin-top: 10px; margin-bottom: 0;">发现最新上架的热门商品</p>
 		</div>
 		
 		<!-- 商品卡片网格 -->
 		<div class="row">
-			<div class="col-xs-6 col-sm-4 col-md-3 col-lg-2" th:each="lGoods:${lastedGoods}">
+			<div class="col-xs-6 col-sm-4 col-md-3 col-lg-3 col-xl-2" th:each="lGoods:${lastedGoods}">
 				<div class="product-card">
 					<!-- 商品图片 -->
 					<a th:href="'goodsDetail?id=' + ${lGoods.id}" style="text-decoration: none;">
@@ -77,35 +77,54 @@
 	</div>
 	
 	<!-- 页脚 -->
-	<footer style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 0; margin-top: 60px;">
-		<div class="container">
+	<footer style="background: var(--gradient-primary); color: white; padding: 40px 0; margin-top: 60px; position: relative; overflow: hidden;">
+		<div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 255, 255, 0.05); pointer-events: none;"></div>
+		<div class="container" style="position: relative; z-index: 1;">
 			<div class="row">
 				<div class="col-md-4 text-center">
 					<h4 style="color: white; font-weight: 600;">关于我们</h4>
-					<p style="color: rgba(255,255,255,0.8); margin-top: 15px;">
+					<p style="color: rgba(255,255,255,0.9); margin-top: 15px;">
 						eBusiness 是一家专注于为用户提供优质商品的电商平台
 					</p>
 				</div>
 				<div class="col-md-4 text-center">
 					<h4 style="color: white; font-weight: 600;">客户服务</h4>
-					<p style="color: rgba(255,255,255,0.8); margin-top: 15px;">
+					<p style="color: rgba(255,255,255,0.9); margin-top: 15px;">
 						联系电话: 888-888-8888<br>
 						服务时间: 9:00 - 21:00
 					</p>
 				</div>
 				<div class="col-md-4 text-center">
 					<h4 style="color: white; font-weight: 600;">关注我们</h4>
-					<p style="color: rgba(255,255,255,0.8); margin-top: 15px;">
+					<p style="color: rgba(255,255,255,0.9); margin-top: 15px;">
 						微信公众号: eBusiness<br>
 						官方微博: @eBusiness官方
 					</p>
 				</div>
 			</div>
-			<hr style="border-color: rgba(255,255,255,0.2); margin: 30px 0;">
-			<p class="text-center" style="color: rgba(255,255,255,0.8); margin: 0;">
+			<hr style="border-color: rgba(255,255,255,0.3); margin: 30px 0;">
+			<p class="text-center" style="color: rgba(255,255,255,0.9); margin: 0;">
 				© 2025 eBusiness. All Rights Reserved.
 			</p>
 		</div>
 	</footer>
+	
+	<script>
+	// 页面加载完成后初始化粒子效果
+	$(document).ready(function() {
+		// 为商品卡片添加点击粒子效果
+		$('.product-card').on('mouseenter', function() {
+			var rect = this.getBoundingClientRect();
+			if (window.particleSystem) {
+				window.particleSystem.createBurst(
+					rect.left + rect.width / 2, 
+					rect.top + rect.height / 2, 
+					8, 
+					'#FFB84D'
+				);
+			}
+		});
+	});
+	</script>
 </body>
 </html>

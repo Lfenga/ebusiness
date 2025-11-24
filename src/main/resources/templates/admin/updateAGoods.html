@@ -118,12 +118,37 @@
 					// 专门用于修改页面的图片预览函数
 					function handleUpdateFilePreview(input) {
 						if (input.files && input.files[0]) {
+							var file = input.files[0];
+							
+							// 验证文件类型
+							var validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+							if (!validTypes.includes(file.type)) {
+								showToast('请选择 JPG、PNG 格式的图片', 'warning');
+								input.value = '';
+								return;
+							}
+							
+							// 验证文件大小（5MB）
+							if (file.size > 5 * 1024 * 1024) {
+								showToast('图片大小不能超过 5MB', 'warning');
+								input.value = '';
+								return;
+							}
+							
+							// 读取并显示预览
 							var reader = new FileReader();
 							reader.onload = function(e) {
 								var previewImg = document.getElementById('previewImg');
 								previewImg.src = e.target.result;
+								
+								// 更新文件名显示
+								var label = document.querySelector('.file-upload-text');
+								label.textContent = file.name;
+								label.style.color = '#67c23a';
+								
+								showToast('图片预览已更新', 'success', 2000);
 							};
-							reader.readAsDataURL(input.files[0]);
+							reader.readAsDataURL(file);
 						}
 					}
 					</script>

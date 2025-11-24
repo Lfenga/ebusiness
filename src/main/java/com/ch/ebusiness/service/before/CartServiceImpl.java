@@ -264,9 +264,39 @@ public class CartServiceImpl implements CartService {
 
 	@Override
 	public String myOder(Model model, HttpSession session) {
+		return myOder(model, session, 1);
+	}
+
+	@Override
+	public String myOder(Model model, HttpSession session, Integer page) {
 		// 导航栏商品类型
 		model.addAttribute("goodsType", indexRepository.selectGoodsType());
-		model.addAttribute("myOrder", cartRepository.myOrder(MyUtil.getUser(session).getId()));
+
+		Integer userId = MyUtil.getUser(session).getId();
+
+		// 分页参数
+		int pageSize = 10; // 每页显示10条
+		int currentPage = (page == null || page < 1) ? 1 : page;
+		int startIndex = (currentPage - 1) * pageSize;
+
+		// 获取总订单数
+		int totalOrders = cartRepository.countMyOrder(userId);
+		int totalPages = (int) Math.ceil((double) totalOrders / pageSize);
+
+		// 确保当前页不超过总页数
+		if (currentPage > totalPages && totalPages > 0) {
+			currentPage = totalPages;
+			startIndex = (currentPage - 1) * pageSize;
+		}
+
+		// 获取分页数据
+		List<Map<String, Object>> orders = cartRepository.myOrderByPage(userId, startIndex, pageSize);
+
+		model.addAttribute("myOrder", orders);
+		model.addAttribute("currentPage", currentPage);
+		model.addAttribute("totalPages", totalPages);
+		model.addAttribute("totalOrders", totalOrders);
+
 		return "user/myOrder";
 	}
 

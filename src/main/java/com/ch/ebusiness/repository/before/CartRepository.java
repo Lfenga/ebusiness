@@ -38,6 +38,12 @@ public interface CartRepository {
 
 	public List<Map<String, Object>> myOrder(Integer uid);
 
+	public int countMyOrder(Integer uid);
+
+	public List<Map<String, Object>> myOrderByPage(@Param("uid") Integer uid,
+			@Param("startIndex") int startIndex,
+			@Param("pageSize") int pageSize);
+
 	public List<Map<String, Object>> orderDetail(Integer id);
 
 	public int updateUpwd(@Param("uid") Integer uid, @Param("bpwd") String bpwd);
