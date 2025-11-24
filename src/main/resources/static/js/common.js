@@ -170,34 +170,67 @@ function previewImage(src) {
 
 // 侧边栏菜单切换
 function initSidebarMenu() {
-    document.querySelectorAll('.sidebar-menu-link').forEach(link => {
-        if (link.nextElementSibling && link.nextElementSibling.classList.contains('sidebar-submenu')) {
-            link.onclick = function(e) {
+    // 获取所有一级菜单项
+    const menuItems = document.querySelectorAll('.sidebar-menu > .sidebar-menu-item');
+    
+    menuItems.forEach(item => {
+        const link = item.querySelector(':scope > .sidebar-menu-link');
+        const submenu = item.querySelector(':scope > .sidebar-submenu');
+        
+        // 只为有子菜单的项添加点击事件
+        if (link && submenu) {
+            // 移除旧的事件监听器（如果有）
+            const newLink = link.cloneNode(true);
+            link.parentNode.replaceChild(newLink, link);
+            
+            newLink.addEventListener('click', function(e) {
                 e.preventDefault();
-                const parent = this.parentElement;
-                const isOpen = parent.classList.contains('open');
+                e.stopPropagation();
                 
-                // 关闭其他菜单
-                document.querySelectorAll('.sidebar-menu-item.open').forEach(item => {
-                    if (item !== parent) {
-                        item.classList.remove('open');
+                const isCurrentlyOpen = item.classList.contains('open');
+                
+                // 关闭所有其他菜单
+                menuItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('open');
                     }
                 });
                 
                 // 切换当前菜单
-                parent.classList.toggle('open', !isOpen);
-            };
+                if (isCurrentlyOpen) {
+                    item.classList.remove('open');
+                } else {
+                    item.classList.add('open');
+                }
+                
+                return false;
+            });
         }
     });
     
     // 设置当前激活菜单
     const currentPath = window.location.pathname;
     document.querySelectorAll('.sidebar-submenu-link').forEach(link => {
-        if (link.getAttribute('href') && currentPath.includes(link.getAttribute('href'))) {
-            link.classList.add('active');
-            const parent = link.closest('.sidebar-menu-item');
-            if (parent) {
-                parent.classList.add('open');
+        const href = link.getAttribute('href');
+        if (href && href !== 'javascript:void(0)') {
+            const linkPath = href.split('?')[0];
+            if (currentPath.includes(linkPath)) {
+                link.classList.add('active');
+                const parent = link.closest('.sidebar-menu-item');
+                if (parent) {
+                    parent.classList.add('open');
+                }
+            }
+        }
+    });
+    
+    // 高亮一级菜单
+    document.querySelectorAll('.sidebar-menu > .sidebar-menu-item > .sidebar-menu-link').forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && href !== 'javascript:void(0)') {
+            const linkPath = href.split('?')[0];
+            if (currentPath.includes(linkPath)) {
+                link.classList.add('active');
             }
         }
     });

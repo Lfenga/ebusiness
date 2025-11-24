@@ -15,24 +15,30 @@
 		// 显示加载动画
 		$('#payBtn').prop('disabled', true).html('<span class="loading-spinner" style="width: 20px; height: 20px; border-width: 2px; display: inline-block; vertical-align: middle; margin-right: 8px;"></span>处理中...');
 		
+		var pathName=window.document.location.pathname;
+		var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
+		
 		$.ajax({
-			url : [[@{/cart/pay}]],
-			type : "post",
-			contentType : "application/json",
+			url : projectName + '/cart/pay',
+			type : 'POST',
+			contentType : 'application/json',
 			data : JSON.stringify({
-				id : $("#oid").text()
+				id : parseInt($("#oid").text())
 			}),
-			success : function(obj){
-				showAlert("支付成功！正在跳转...", "success");
-				setTimeout(function() {
-					var pathName=window.document.location.pathname;
-					var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
-					window.location.href = projectName;
-				}, 1500);
+			success : function(result){
+				if(result === 'ok'){
+					showAlert("支付成功！正在跳转...", "success");
+					setTimeout(function() {
+						window.location.href = projectName;
+					}, 1500);
+				} else {
+					$('#payBtn').prop('disabled', false).html('💳 立即支付');
+					showAlert("支付失败，请稍后重试！", "error");
+				}
 			},
 	        error : function() {
 				$('#payBtn').prop('disabled', false).html('💳 立即支付');
-	            showAlert("支付失败，请稍后重试！", "warning");
+	            showAlert("支付失败，请稍后重试！", "error");
 	        }
 		});
 	}
@@ -99,7 +105,7 @@
 		<a href="cart/myOder" class="btn btn-custom-secondary btn-lg">
 			查看订单
 		</a>
-		<a href="/" class="btn btn-default btn-lg">
+		<a th:href="@{/}" class="btn btn-default btn-lg">
 			返回首页
 		</a>
 	</div>

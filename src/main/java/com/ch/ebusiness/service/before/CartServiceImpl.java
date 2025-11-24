@@ -1,12 +1,16 @@
 package com.ch.ebusiness.service.before;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
@@ -15,10 +19,13 @@ import com.ch.ebusiness.entity.Order;
 import com.ch.ebusiness.repository.before.CartRepository;
 import com.ch.ebusiness.repository.before.IndexRepository;
 import com.ch.ebusiness.util.MD5Util;
+import com.ch.ebusiness.util.MoneyUtil;
 import com.ch.ebusiness.util.MyUtil;
 
 @Service
 public class CartServiceImpl implements CartService {
+
+	private static final Logger logger = LoggerFactory.getLogger(CartServiceImpl.class);
 	@Autowired
 	private com.ch.ebusiness.repository.before.UserRepository userRepository;
 
@@ -72,6 +79,10 @@ public class CartServiceImpl implements CartService {
 	private CartRepository cartRepository;
 	@Autowired
 	private IndexRepository indexRepository;
+	@Autowired
+	private com.ch.ebusiness.util.RedisLockUtil redisLockUtil;
+	@Autowired
+	private org.springframework.data.redis.core.RedisTemplate<String, Object> redisTemplate;
 
 	@Override
 	public String putCart(Goods goods, Model model, HttpSession session) {
@@ -89,11 +100,15 @@ public class CartServiceImpl implements CartService {
 	@Override
 	public String selectCart(Model model, HttpSession session, String act) {
 		List<Map<String, Object>> list = cartRepository.selectCart(MyUtil.getUser(session).getId());
-		double sum = 0;
+		BigDecimal sum = BigDecimal.ZERO;
 		for (Map<String, Object> map : list) {
-			sum = sum + (Double) map.get("smallsum");
+			Object smallsumObj = map.get("smallsum");
+			BigDecimal smallsum = (smallsumObj instanceof BigDecimal)
+					? (BigDecimal) smallsumObj
+					: BigDecimal.valueOf(((Number) smallsumObj).doubleValue());
+			sum = sum.add(smallsum);
 		}
-		model.addAttribute("total", sum);
+		model.addAttribute("total", MoneyUtil.format(sum));
 		model.addAttribute("cartlist", list);
 		// // 广告区商品
 		// model.addAttribute("advertisementGoods",
@@ -120,49 +135,125 @@ public class CartServiceImpl implements CartService {
 	}
 
 	@Override
-	@Transactional
 	public String submitOrder(Order order, Model model, HttpSession session) {
-		order.setBusertable_id(MyUtil.getUser(session).getId());
-
-		// 1. 先检查库存是否充足
-		List<Map<String, Object>> listGoods = cartRepository.selectGoodsShop(MyUtil.getUser(session).getId());
-		for (Map<String, Object> map : listGoods) {
-			Integer gid = (Integer) map.get("gid");
-			Integer gshoppingnum = (Integer) map.get("gshoppingnum");
-
-			// 查询商品当前库存
-			Goods goods = indexRepository.selectAGoods(gid);
-			if (goods == null) {
-				throw new RuntimeException("商品不存在，商品ID：" + gid);
-			}
-			if (goods.getStock() < gshoppingnum) {
-				throw new RuntimeException(
-						"商品【" + goods.getGname() + "】库存不足！当前库存：" + goods.getStock() + "，需要：" + gshoppingnum);
-			}
-		}
-
-		// 2. 生成订单
-		cartRepository.addOrder(order);
-
-		// 3. 生成订单详情
-		cartRepository.addOrderDetail(order.getId(), MyUtil.getUser(session).getId());
-
-		// 4. 扣减商品库存（使用悲观锁机制）
-		for (Map<String, Object> map : listGoods) {
-			int updatedRows = cartRepository.updateStore(map);
-			if (updatedRows == 0) {
-				// 如果更新失败（库存不足），回滚事务
-				Integer gid = (Integer) map.get("gid");
-				Goods goods = indexRepository.selectAGoods(gid);
-				throw new RuntimeException("商品【" + goods.getGname() + "】库存不足，下单失败！");
+		// 最多重试3次
+		int maxRetries = 3;
+		for (int i = 0; i < maxRetries; i++) {
+			try {
+				return submitOrderWithLock(order, model, session);
+			} catch (RuntimeException e) {
+				if (e.getMessage().contains("库存不足") || i == maxRetries - 1) {
+					throw e; // 库存不足或最后一次重试失败，直接抛出异常
+				}
+				// 并发冲突，等待后重试
+				try {
+					Thread.sleep(50 * (i + 1)); // 递增等待时间
+				} catch (InterruptedException ie) {
+					Thread.currentThread().interrupt();
+					throw new RuntimeException("下单被中断");
+				}
 			}
 		}
+		throw new RuntimeException("下单失败，请重试");
+	}
 
-		// 5. 清空购物车
-		cartRepository.clear(MyUtil.getUser(session).getId());
+	/**
+	 * 使用分布式锁的下单方法
+	 * 使用READ_COMMITTED隔离级别，提高并发性能
+	 */
+	@Transactional(rollbackFor = Exception.class, isolation = Isolation.READ_COMMITTED)
+	private String submitOrderWithLock(Order order, Model model, HttpSession session) {
+		long startTime = System.currentTimeMillis();
+		Integer userId = MyUtil.getUser(session).getId();
+		order.setBusertable_id(userId);
 
-		model.addAttribute("order", order);
-		return "user/pay";
+		logger.info("用户[{}]开始提交订单，订单金额：{}", userId, order.getAmount());
+
+		// 防止重复提交：检查最近3秒内是否有相同金额的订单
+		String orderIdempotentKey = "order:idempotent:" + userId + ":" + order.getAmount();
+		Boolean isFirstSubmit = redisTemplate.opsForValue().setIfAbsent(
+				orderIdempotentKey,
+				"1",
+				3,
+				java.util.concurrent.TimeUnit.SECONDS);
+		if (!Boolean.TRUE.equals(isFirstSubmit)) {
+			throw new RuntimeException("请勿重复提交订单");
+		}
+
+		try {
+			// 1. 获取购物车商品列表
+			List<Map<String, Object>> listGoods = cartRepository.selectGoodsShop(userId);
+			if (listGoods == null || listGoods.isEmpty()) {
+				throw new RuntimeException("购物车为空");
+			}
+
+			// 2. 为每个商品获取分布式锁并检查库存
+			String requestId = com.ch.ebusiness.util.RedisLockUtil.generateRequestId();
+			java.util.List<String> acquiredLocks = new java.util.ArrayList<>();
+
+			try {
+				// 2.1 获取所有商品的锁
+				for (Map<String, Object> map : listGoods) {
+					Integer gid = (Integer) map.get("gid");
+					Integer gshoppingnum = (Integer) map.get("gshoppingnum");
+
+					String lockKey = "goods:stock:lock:" + gid;
+
+					// 尝试获取锁，最多等待2秒
+					boolean locked = redisLockUtil.tryLock(lockKey, requestId, 5);
+					if (!locked) {
+						throw new RuntimeException("商品正在被其他用户购买，请稍后重试");
+					}
+					acquiredLocks.add(lockKey);
+
+					// 2.2 检查库存
+					Goods goods = indexRepository.selectAGoods(gid);
+					if (goods == null) {
+						throw new RuntimeException("商品不存在，商品ID：" + gid);
+					}
+					if (goods.getStock() < gshoppingnum) {
+						throw new RuntimeException(
+								"商品【" + goods.getGname() + "】库存不足！当前库存：" + goods.getStock() + "，需要：" + gshoppingnum);
+					}
+				}
+
+				// 3. 生成订单
+				cartRepository.addOrder(order);
+
+				// 4. 生成订单详情
+				cartRepository.addOrderDetail(order.getId(), userId);
+
+				// 5. 批量扣减库存（使用数据库悲观锁）
+				for (Map<String, Object> map : listGoods) {
+					int updatedRows = cartRepository.updateStore(map);
+					if (updatedRows == 0) {
+						// 库存扣减失败，回滚事务
+						Integer gid = (Integer) map.get("gid");
+						Goods goods = indexRepository.selectAGoods(gid);
+						throw new RuntimeException("商品【" + goods.getGname() + "】库存不足，下单失败！");
+					}
+				}
+
+				// 6. 清空购物车
+				cartRepository.clear(userId);
+
+				long duration = System.currentTimeMillis() - startTime;
+				logger.info("用户[{}]订单提交成功，订单ID：{}，耗时：{}ms", userId, order.getId(), duration);
+
+				model.addAttribute("order", order);
+				return "user/pay";
+
+			} finally {
+				// 释放所有获取的锁
+				for (String lockKey : acquiredLocks) {
+					redisLockUtil.releaseLock(lockKey, requestId);
+				}
+			}
+		} catch (Exception e) {
+			// 删除幂等性key，允许重试
+			redisTemplate.delete(orderIdempotentKey);
+			throw e;
+		}
 	}
 
 	@Override

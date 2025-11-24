@@ -125,62 +125,7 @@
 	</div>
 	
 	<script>
-	// 确保DOM加载完成后初始化菜单
-	$(document).ready(function() {
-		// 初始化侧边栏菜单交互
-		initSidebarMenu();
-	});
-	
-	// 如果common.js中的initSidebarMenu函数不存在，则在此定义
-	function initSidebarMenu() {
-		// 处理带有子菜单的菜单项点击事件
-		$('.sidebar-menu-item').each(function() {
-			var $this = $(this);
-			var $link = $this.find('> .sidebar-menu-link');
-			var $submenu = $this.find('.sidebar-submenu');
-			var $arrow = $link.find('.sidebar-menu-arrow');
-			
-			// 如果有子菜单
-			if ($submenu.length > 0) {
-				$link.on('click', function(e) {
-					e.preventDefault();
-					
-					// 切换展开/收起状态
-					if ($this.hasClass('open')) {
-						$this.removeClass('open');
-						$submenu.slideUp(200);
-						$arrow.text('▶');
-					} else {
-						// 关闭其他已展开的菜单
-						$('.sidebar-menu-item.open').removeClass('open').find('.sidebar-submenu').slideUp(200);
-						$('.sidebar-menu-arrow').text('▶');
-						
-						// 展开当前菜单
-						$this.addClass('open');
-						$submenu.slideDown(200);
-						$arrow.text('▼');
-					}
-				});
-			}
-		});
-		
-		// 高亮当前页面对应的菜单项
-		var currentUrl = window.location.pathname;
-		$('.sidebar-submenu-link, .sidebar-menu-link').each(function() {
-			var $link = $(this);
-			var href = $link.attr('href');
-			if (href && href !== 'javascript:void(0)' && currentUrl.indexOf(href.split('?')[0]) >= 0) {
-				$link.addClass('active');
-				// 如果是子菜单，展开父菜单
-				var $parentItem = $link.closest('.sidebar-menu-item');
-				if ($parentItem.find('.sidebar-submenu').length > 0) {
-					$parentItem.addClass('open');
-					$parentItem.find('.sidebar-submenu').show();
-					$parentItem.find('.sidebar-menu-arrow').text('▼');
-				}
-			}
-		});
-	}
+	// 菜单逻辑已在common.js中实现，此处无需重复代码
 	</script>
 </body>
 </html>

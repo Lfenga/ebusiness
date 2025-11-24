@@ -1,12 +1,13 @@
 package com.ch.ebusiness.entity;
 
 import org.springframework.web.multipart.MultipartFile;
+import java.math.BigDecimal;
 
 public class Goods {
 	private int id;
 	private String gname;
-	private double goprice;
-	private double grprice;
+	private BigDecimal goprice;
+	private BigDecimal grprice;
 	private int stock;
 	private String gpicture;
 	private MultipartFile fileName;
@@ -31,19 +32,19 @@ public class Goods {
 		this.gname = gname;
 	}
 
-	public double getGoprice() {
+	public BigDecimal getGoprice() {
 		return goprice;
 	}
 
-	public void setGoprice(double goprice) {
+	public void setGoprice(BigDecimal goprice) {
 		this.goprice = goprice;
 	}
 
-	public double getGrprice() {
+	public BigDecimal getGrprice() {
 		return grprice;
 	}
 
-	public void setGrprice(double grprice) {
+	public void setGrprice(BigDecimal grprice) {
 		this.grprice = grprice;
 	}
 

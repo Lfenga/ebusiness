@@ -16,8 +16,8 @@
 <div class="container" style="margin-top: 30px; margin-bottom: 60px;">
 	<!-- 面包屑导航 -->
 	<ol class="breadcrumb breadcrumb-custom">
-		<li><a href="/">首页</a></li>
-		<li><a href="cart/myOder">我的订单</a></li>
+		<li><a th:href="@{/}">首页</a></li>
+		<li><a th:href="@{/cart/myOder}">我的订单</a></li>
 		<li class="active">订单详情</li>
 	</ol>
 	
@@ -87,10 +87,10 @@
 			
 			<!-- 操作按钮 -->
 			<div style="margin-top: 30px; text-align: center;">
-				<a href="cart/myOder" class="btn btn-custom-secondary btn-lg">
+				<a th:href="@{/cart/myOder}" class="btn btn-custom-secondary btn-lg">
 					← 返回订单列表
 				</a>
-				<a href="/" class="btn btn-custom-primary btn-lg" style="margin-left: 15px;">
+				<a th:href="@{/}" class="btn btn-custom-primary btn-lg" style="margin-left: 15px;">
 					继续购物
 				</a>
 			</div>

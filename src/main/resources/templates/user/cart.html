@@ -37,28 +37,12 @@
 		}
 	}
 	function clearCart(){
-		if (typeof window.showConfirm === 'function') {
-			// 使用Element Plus风格的确认对话框
-			window.showConfirm(
-				'确认清空购物车吗？',
-				'此操作不可恢复，将删除购物车中的所有商品！',
-				function() {
-					//获取路径
-					var pathName=window.document.location.pathname;
-					//截取，得到项目名称
-					var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
-					window.location.href = projectName + "/cart/clearCart";
-				}
-			);
-		} else {
-			// 降级处理：使用原生确认对话框
-			if(window.confirm("确认清空购物车吗？此操作不可恢复！")){
-				//获取路径
-				var pathName=window.document.location.pathname;
-				//截取，得到项目名称
-				var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
-				window.location.href = projectName + "/cart/clearCart";
-			}
+		if(window.confirm("确认清空购物车吗？此操作不可恢复！")){
+			//获取路径
+			var pathName=window.document.location.pathname;
+			//截取，得到项目名称
+			var projectName=pathName.substring(0,pathName.substr(1).indexOf('/')+1);
+			window.location.href = projectName + "/cart/clearCart";
 		}
 	}
 </script>
@@ -69,7 +53,7 @@
 <div class="container" style="margin-top: 30px; margin-bottom: 60px;">
 	<!-- 面包屑导航 -->
 	<ol class="breadcrumb breadcrumb-custom">
-		<li><a href="/">首页</a></li>
+		<li><a th:href="@{/}">首页</a></li>
 		<li class="active">购物车</li>
 	</ol>
 	

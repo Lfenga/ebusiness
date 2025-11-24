@@ -40,10 +40,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="selectGoodsShop"  parameterType="Integer" resultType="map">
 		select shoppingnum gshoppingnum, goodstable_id gid from carttable where busertable_id=#{uid}
 	</select>
-	<!-- 更新商品库存 - 使用悲观锁确保并发安全 -->
+	<!-- 更新商品库存 - 使用悲观锁确保并发安全 
+		 WHERE条件中的 stock >= #{gshoppingnum} 确保库存充足时才扣减
+		 结合事务和行锁，防止超卖问题
+		 如果库存不足，返回更新行数为0，业务层会回滚事务
+	-->
 	<update id="updateStore" parameterType="map">
-		update goodstable set stock = stock - #{gshoppingnum} 
-		where id = #{gid} and stock >= #{gshoppingnum}
+		update goodstable 
+		set stock = stock - #{gshoppingnum} 
+		where id = #{gid} 
+		  and stock >= #{gshoppingnum}
+		  and status = 1
 	</update>
 	<!-- 支付订单 -->
 	<update id="pay" parameterType="Integer">
