@@ -1,6 +1,5 @@
 #  eBusiness 电商平台
 
-<div align="center">
 
 ![Java](https://img.shields.io/badge/Java-1.8%2B-orange.svg) 
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-2.1.7-brightgreen.svg)
