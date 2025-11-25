@@ -1,0 +1,88 @@
+/* 轮播图容器样式 */
+.swiper-container {
+	width: 100%;
+	height: 420px;
+	margin-bottom: 30px;
+}
+
+.swiper-slide {
+	text-align: center;
+	font-size: 18px;
+	background: #fff;
+	display: -webkit-box;
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-box-pack: center;
+	-ms-flex-pack: center;
+	-webkit-justify-content: center;
+	justify-content: center;
+	-webkit-box-align: center;
+	-ms-flex-align: center;
+	-webkit-align-items: center;
+	align-items: center;
+}
+
+.banner {
+	position: relative;
+	width: 100%;
+	height: 100%;
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+/* 分页器样式 */
+.swiper-container-horizontal>.swiper-pagination-bullets {
+	display: inline-block;
+	width: auto;
+	left: 50%;
+	transform: translateX(-50%);
+	padding: 4px;
+	bottom: 10px;
+}
+
+.swiper-container-horizontal>.swiper-pagination-bullets .swiper-pagination-bullet {
+	background-color: #FFFFFF;
+	opacity: 0.5;
+	width: 8px;
+	height: 8px;
+	margin: auto 4px;
+	vertical-align: middle;
+}
+
+.swiper-container-horizontal>.swiper-pagination-bullets .swiper-pagination-bullet-active {
+	background-color: #a7936e;
+	opacity: 1;
+	border: 4px solid #dfcead;
+}
+
+/* 导航按钮样式 */
+.swiper-button-prev,
+.swiper-button-next {
+	width: 40px;
+	height: 40px;
+	background-color: rgba(255, 255, 255, 0.7);
+	border-radius: 50%;
+	color: #333;
+}
+
+.swiper-button-prev:after,
+.swiper-button-next:after {
+	font-size: 20px;
+	font-weight: bold;
+	color: #333;
+}
+
+.swiper-button-prev:hover,
+.swiper-button-next:hover {
+	background-color: rgba(255, 255, 255, 0.9);
+}
+
+.swiper-button-prev {
+	left: 30px;
+}
+
+.swiper-button-next {
+	right: 30px;
+}

@@ -143,7 +143,7 @@
 								<span th:text="${order.orderdate}"></span>
 							</td>
 							<td class="text-center" style="vertical-align: middle;">
-								<a th:href="'cart/orderDetail?id=' + ${order.id}" 
+								<a th:href="@{/cart/orderDetail(id=${order.id})}" 
 								   class="btn btn-sm btn-custom-secondary" 
 								   target="_blank">
 									👁️ 查看详情
@@ -176,7 +176,7 @@
 					<ul class="pagination pagination-custom">
 						<!-- 上一页 -->
 						<li th:class="${currentPage == 1} ? 'disabled' : ''">
-							<a th:href="${currentPage == 1} ? '#' : 'myOder?page=' + ${currentPage - 1}" aria-label="上一页">
+							<a th:href="${currentPage == 1} ? 'javascript:void(0)' : @{/cart/myOder(page=${currentPage - 1})}" aria-label="上一页">
 								<span aria-hidden="true">&laquo; 上一页</span>
 							</a>
 						</li>
@@ -184,12 +184,12 @@
 						<!-- 页码 -->
 						<li th:each="i : ${#numbers.sequence(1, totalPages)}" 
 							th:class="${i == currentPage} ? 'active' : ''">
-							<a th:href="'myOder?page=' + ${i}" th:text="${i}">1</a>
+							<a th:href="@{/cart/myOder(page=${i})}" th:text="${i}">1</a>
 						</li>
 						
 						<!-- 下一页 -->
 						<li th:class="${currentPage == totalPages} ? 'disabled' : ''">
-							<a th:href="${currentPage == totalPages} ? '#' : 'myOder?page=' + ${currentPage + 1}" aria-label="下一页">
+							<a th:href="${currentPage == totalPages} ? 'javascript:void(0)' : @{/cart/myOder(page=${currentPage + 1})}" aria-label="下一页">
 								<span aria-hidden="true">下一页 &raquo;</span>
 							</a>
 						</li>
@@ -227,10 +227,21 @@ $(document).ready(function() {
 		$(this).addClass('active');
 		
 		if (status === 'all') {
-			$('tbody tr').show();
+			// 显示所有订单行（但不包括空状态提示行）
+			$('tbody tr').each(function() {
+				if (!$(this).find('.empty-state').length) {
+					$(this).show();
+				}
+			});
 		} else {
+			// 根据状态筛选
 			$('tbody tr').each(function() {
 				var $statusBadge = $(this).find('.status-badge');
+				// 跳过空状态行
+				if ($(this).find('.empty-state').length) {
+					return;
+				}
+				
 				if ($statusBadge.length > 0) {
 					if ((status == 0 && $statusBadge.hasClass('status-unpaid')) ||
 						(status == 1 && $statusBadge.hasClass('status-paid'))) {

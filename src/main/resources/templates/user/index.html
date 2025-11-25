@@ -7,12 +7,50 @@
 <title>eBusiness 电商平台 - 首页</title>
 <link rel="stylesheet" href="css/bootstrap.min.css" />
 <link rel="stylesheet" href="css/custom.css" />
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="css/swiper-4.3.5.min.css" />
+<link rel="stylesheet" href="css/swiper-custom.css" />
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 </head>
 <body>
 	<!-- 加载header.html -->
 	<div th:include="user/header"></div>
+	
+	<!-- 轮播图 -->
+	<div class="swiper-container">
+		<div class="swiper-wrapper">
+			<div class="swiper-slide">
+				<div class="banner" style="background-image: url(imgs/web/img/home-pagelun1.jpg);"></div>
+			</div>
+			<div class="swiper-slide">
+				<div class="banner" style="background-image: url(imgs/web/img/home-pagelun2.jpg);"></div>
+			</div>
+			<div class="swiper-slide">
+				<div class="banner" style="background-image: url(imgs/web/img/home-pagelun3.jpg);"></div>
+			</div>
+			<div class="swiper-slide">
+				<div class="banner" style="background-image: url(imgs/web/img/home-pagelun4.jpg);"></div>
+			</div>
+			<div class="swiper-slide">
+				<div class="banner" style="background-image: url(imgs/web/img/home-pagelun5.jpg);"></div>
+			</div>
+			<div class="swiper-slide">
+				<div class="banner" style="background-image: url(imgs/web/img/home-pagelun6.jpg);"></div>
+			</div>
+			<div class="swiper-slide">
+				<div class="banner" style="background-image: url(imgs/web/img/home-pagelun7.jpg);"></div>
+			</div>
+			<div class="swiper-slide">
+				<div class="banner" style="background-image: url(imgs/web/img/home-pagelun8.jpg);"></div>
+			</div>
+		</div>
+		<!-- 分页器 -->
+		<div class="swiper-pagination"></div>
+		<!-- 导航按钮 -->
+		<div class="swiper-button-next"></div>
+		<div class="swiper-button-prev"></div>
+	</div>
 	
 	<!-- 主要内容区域 -->
 	<div class="container page-transition" style="margin-top: 30px;">
@@ -109,9 +147,32 @@
 		</div>
 	</footer>
 	
+	<!-- Swiper JS -->
+	<script src="js/swiper-4.3.5.min.js"></script>
+	
 	<script>
 	// 页面加载完成后初始化粒子效果
 	$(document).ready(function() {
+		// 初始化 Swiper 轮播图
+		var swiper = new Swiper('.swiper-container', {
+			spaceBetween: 30,
+			centeredSlides: true,
+			autoplay: {
+				delay: 2500,
+				disableOnInteraction: false,
+			},
+			pagination: {
+				el: '.swiper-pagination',
+				clickable: true,
+			},
+			navigation: {
+				nextEl: '.swiper-button-next',
+				prevEl: '.swiper-button-prev',
+			},
+			loop: true,
+			speed: 800,
+		});
+		
 		// 为商品卡片添加点击粒子效果
 		$('.product-card').on('mouseenter', function() {
 			var rect = this.getBoundingClientRect();
