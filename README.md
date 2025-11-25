@@ -164,12 +164,8 @@
 
 ## 📸 项目截图
 
-### 用户端界面
+### 用户端界面🏠 首页轮播图
 
-<details>
-<summary>📱 点击展开查看用户端截图</summary>
-
-#### 🏠 首页轮播图
 ![](readmeImages/首页.png)
 *全屏轮播图 + 最新商品展示*
 
@@ -195,10 +191,8 @@
 
 ### 管理端界面
 
-<details>
-<summary>🔧 点击展开查看管理端截图</summary>
-
 #### 📊 数据看板
+
 ![](readmeImages/数据分析1.png)
 *ECharts 可视化数据统计*
 
@@ -573,6 +567,3 @@ eBusiness/
 
 如果这个项目对你有帮助，请给个 Star ⭐ 支持一下！
 
----
-
-<div align="cen
