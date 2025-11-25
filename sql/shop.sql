@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50740
 File Encoding         : 65001
 
-Date: 2025-11-24 18:17:06
+Date: 2025-11-25 21:46:45
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -44,7 +44,7 @@ CREATE TABLE `admin_operation_log` (
   KEY `idx_operation_type` (`operation_type`),
   KEY `idx_status` (`status`),
   CONSTRAINT `admin_operation_log_ibfk_1` FOREIGN KEY (`admin_id`) REFERENCES `ausertable` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8mb4 COMMENT='管理员操作日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=98 DEFAULT CHARSET=utf8mb4 COMMENT='管理员操作日志表';
 
 -- ----------------------------
 -- Records of admin_operation_log
@@ -97,6 +97,7 @@ INSERT INTO `admin_operation_log` VALUES ('93', '2', 'root', '系统管理员2',
 INSERT INTO `admin_operation_log` VALUES ('94', '2', 'root', '系统管理员2', 'ADD', '商品管理', '添加商品', 'Goods', '14', 'addGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 18:00:26', '46', 'SUCCESS', null);
 INSERT INTO `admin_operation_log` VALUES ('95', '1', 'admin', '系统管理员', 'ADD', '商品管理', '添加商品', 'Goods', '15', 'addGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 18:03:42', '55', 'SUCCESS', null);
 INSERT INTO `admin_operation_log` VALUES ('96', '1', 'admin', '系统管理员', 'ADD', '商品管理', '添加商品', 'Goods', '16', 'addGoods', '[\"Goods 对象\"]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-24 18:14:06', '14', 'SUCCESS', null);
+INSERT INTO `admin_operation_log` VALUES ('97', '1', 'admin', '系统管理员', 'DELETE', '缓存管理', '清除商品类型缓存 [键: index:goods_types]', '', null, 'quickClearGoodsTypes', '[]', '0:0:0:0:0:0:0:1', 'Chrome', '2025-11-25 19:46:33', '8', 'SUCCESS', null);
 
 -- ----------------------------
 -- Table structure for ausertable
@@ -122,7 +123,7 @@ CREATE TABLE `ausertable` (
 -- ----------------------------
 -- Records of ausertable
 -- ----------------------------
-INSERT INTO `ausertable` VALUES ('1', 'admin', '$2a$10$B0mMb0sbJcdlBomYuW3wNeMZ73ACtRkN0k3Fg5VgEgd4vBKCqt51q', 'admin@ebusiness.com', '系统管理员', null, '1', '2025-11-16 16:39:56', '2025-11-24 18:02:14');
+INSERT INTO `ausertable` VALUES ('1', 'admin', '$2a$10$B0mMb0sbJcdlBomYuW3wNeMZ73ACtRkN0k3Fg5VgEgd4vBKCqt51q', 'admin@ebusiness.com', '系统管理员', null, '1', '2025-11-16 16:39:56', '2025-11-25 21:22:25');
 INSERT INTO `ausertable` VALUES ('2', 'root', '$2a$10$4Oc0c3EvzujaFQTbfH/UGejLdLR07aXJLpenNKd6diR.Q6Dt5jqr.', '11@qq.com', '系统管理员2', '11111111111', '1', '2025-11-16 22:07:55', '2025-11-24 17:43:23');
 INSERT INTO `ausertable` VALUES ('6', '2222', '$2a$10$Cy06A/z5sNa3GZHqAretoOx2jiCu35mMauhc/ZUe3720vw3lvvJ86', '2222@qq.com', '系统管理员22', '22222222222', '1', '2025-11-19 20:13:17', null);
 
